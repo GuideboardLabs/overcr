@@ -1,0 +1,24 @@
+# OverCR HQ Route Marker
+# DO NOT DELETE - establishes canonical Hermes session route
+# Paths are environment-driven for portability
+
+route_id: ${OVERCR_INSTANCE_ID:-overcr-hq-local}
+path: ${OVERCR_ROOT}
+status: active
+priority: 1
+gateway: cli
+autonomous: false
+autonomous_delay_seconds: 3600
+
+connection:
+  hermes_state_db: sqlite:${HERMES_HOME:-~/.hermes}/state.db
+  hermes_config: yaml:${HERMES_HOME:-~/.hermes}/config.yaml
+  model_override: ${OVERCR_MODEL:-}
+  provider: ${OVERCR_PROVIDER:-}
+
+session_ingestion:
+  enabled: true
+  source: ${HERMES_HOME:-~/.hermes}/.hermes_history
+  destinations:
+    - sqlite:${HERMES_HOME:-~/.hermes}/state.db
+    - file:${OVERCR_ROOT}/memory/ingested_sessions/

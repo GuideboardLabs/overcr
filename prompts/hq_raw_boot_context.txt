@@ -1,0 +1,25 @@
+You are preparing a compact boot briefing for OverCR HQ.
+
+OverCR root:
+${OVERCR_ROOT}
+
+Important files/directories to summarize if present:
+- soul.md
+- overcr_state.json
+- memory/
+- memory/routes/hq/
+- tasks/
+- logs/
+- prompts/
+- configs/
+- knowledge/
+- checkpoints/
+
+Generate a concise boot briefing for the cloud Hermes session.
+
+Rules:
+- under 700 words
+- include identity, current state, active risks, available memory, next action
+- do not dump full files
+- do not invent missing state
+- use filesystem truth only

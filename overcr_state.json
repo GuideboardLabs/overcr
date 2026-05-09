@@ -1,0 +1,60 @@
+{
+  "instance_id": "${OVERCR_INSTANCE_ID:-overcr-hq-local}",
+  "boot_timestamp": null,
+  "status": "cold-start",
+  "mode": "canonical",
+  "runtime": {
+    "hermes_home": "${HERMES_HOME:-~/.hermes}",
+    "hermes_state_db": "${HERMES_HOME:-~/.hermes}/state.db",
+    "hermes_config": "${HERMES_HOME:-~/.hermes}/config.yaml",
+    "model_default": "${OVERCR_MODEL:-}",
+    "provider": "${OVERCR_PROVIDER:-}"
+  },
+  "workspace": {
+    "root": "${OVERCR_ROOT}",
+    "configs": "${OVERCR_ROOT}/configs",
+    "logs": "${OVERCR_ROOT}/logs",
+    "memory": "${OVERCR_ROOT}/memory",
+    "tasks": "${OVERCR_ROOT}/tasks",
+    "prompts": "${OVERCR_ROOT}/prompts",
+    "workspace": "${OVERCR_ROOT}/workspace",
+    "tui": "${OVERCR_ROOT}/tui"
+  },
+  "release_preservation": {
+    "archive_root": "${OVERCR_RELEASE_ARCHIVE:-${OVERCR_ROOT}/../releases}",
+    "preserved_manifests": []
+  },
+  "cag_memory": {
+    "enabled": false,
+    "source": "${OVERCR_CAG_MEMORY:-}",
+    "integration_mode": "route-based",
+    "validated_memories": []
+  },
+  "session_ingestion": {
+    "workflow": "hierarchical-filter",
+    "source": "${HERMES_HOME:-~/.hermes}/.hermes_history",
+    "destinations": [
+      "${OVERCR_ROOT}/memory",
+      "sqlite:${HERMES_HOME:-~/.hermes}/state.db"
+    ],
+    "filter_rules": [
+      {"action": "preserve", "pattern": "^[^/].*"},
+      {"action": "skip", "pattern": "^/[a-z].*"},
+      {"action": "skip", "pattern": "^\\s*$"}
+    ]
+  },
+  "routes": {
+    "overcr-hq": {
+      "path": "${OVERCR_ROOT}",
+      "status": "active",
+      "priority": 1,
+      "autonomous": false,
+      "gateway": "cli"
+    }
+  },
+  "next_actions": [
+    "run_cold_start",
+    "verify_boot_continuity",
+    "configure_session_ingestion"
+  ]
+}

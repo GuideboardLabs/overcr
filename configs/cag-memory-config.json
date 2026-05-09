@@ -1,0 +1,25 @@
+{
+  "cag_memory": {
+    "enabled": false,
+    "source": "${OVERCR_CAG_MEMORY:-}",
+    "integration_mode": "route-based",
+    "routes": {
+      "overcr-hq": {
+        "cag_path": "${OVERCR_CAG_MEMORY:-}",
+        "validated_memories": [],
+        "auto_sync": true,
+        "sync_frequency_seconds": 86400
+      }
+    },
+    "schema": {
+      "memory_id": "string",
+      "route_id": "string",
+      "timestamp": "iso8601",
+      "validated": "boolean",
+      "validated_at": "iso8601|null",
+      "content": "json",
+      "tags": "array",
+      "metadata": "json"
+    }
+  }
+}

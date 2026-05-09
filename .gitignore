@@ -1,0 +1,45 @@
+# Runtime state
+sessions/
+logs/
+tmp/
+cache/
+checkpoints/
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Secrets and local config
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+secrets.*
+
+# Databases and live data
+*.db
+*.sqlite
+*.sqlite3
+*.csv
+*.jsonl
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local release artifacts
+releases/
+*.tar.gz
+*.zip
+*.sha256

@@ -1,0 +1,3 @@
+This file is retained for compatibility. Run the executable script instead:
+
+bash HQ_BOOT_VERIFICATION.sh

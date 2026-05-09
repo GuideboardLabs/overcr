@@ -1,0 +1,44 @@
+{
+  "session_ingestion": {
+    "enabled": true,
+    "workflow": "hierarchical-filter",
+    "source": "${HERMES_HOME:-~/.hermes}/.hermes_history",
+    "destinations": [
+      {
+        "type": "sqlite",
+        "path": "${HERMES_HOME:-~/.hermes}/state.db",
+        "table": "messages",
+        "auto_commit": true
+      },
+      {
+        "type": "file",
+        "directory": "${OVERCR_ROOT}/memory/ingested_sessions",
+        "format": "jsonl",
+        "max_per_file": 1000
+      }
+    ],
+    "filter_rules": [
+      {
+        "action": "preserve",
+        "pattern": "^[^/].*",
+        "reason": "regular chat message"
+      },
+      {
+        "action": "skip",
+        "pattern": "^/[a-z].*",
+        "reason": "slash command prefix"
+      },
+      {
+        "action": "skip",
+        "pattern": "^\\s*$",
+        "reason": "empty line"
+      }
+    ],
+    "batch_config": {
+      "enabled": true,
+      "max_batch_size": 50,
+      "max_wait_seconds": 60,
+      "auto_flush_on_boot": true
+    }
+  }
+}
