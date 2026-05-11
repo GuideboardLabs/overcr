@@ -78,9 +78,10 @@ Hermes and Open WebUI both sit above the substrate. They read and write the same
 **Hermes (primary, terminal)**
 
 - Command-line agent interface
-- Runs OverCR's boot prompts and governance rules
+- Runs OverCR's boot prompts and reads repository context
 - Executes tool calls (search, file operations, terminal)
 - Maintains its own session database (`~/.hermes/state.db`)
+- Provides runtime guardrails and approval prompts for some tool risks, depending on Hermes configuration
 - The primary supported path for OverCR
 
 **Open WebUI (secondary, browser)**
@@ -97,7 +98,7 @@ You. The human who approves or rejects outbound actions.
 
 The governance model is explicit: the agent can research, enrich, score, draft, and structure freely. It cannot send, call, book, submit, or contact anyone without your approval.
 
-This is not a suggestion. It is a rule in the doctrine (`soul.md`), enforced in every route, every subagent specification, and every session prompt.
+This is not a suggestion. It is a rule in the doctrine (`soul.md`), repeated in route context, subagent specifications, and session prompts. Hermes may also enforce parts of the boundary through its own approval features. Where runtime enforcement is not available, the agent must stop and ask the operator.
 
 ---
 
@@ -204,13 +205,15 @@ Or simply re-boot.
 
 ## Outreach Boundary Implementation
 
-The boundary is enforced at three levels:
+The boundary is expressed at three levels:
 
 1. **Doctrine** (`soul.md`) — the agent's rules include "avoid destructive commands unless approved" and "inspect before acting"
-2. **Subagent specification** (CryER and future subagents) — explicitly list permitted and forbidden actions
-3. **Interface behavior** — Hermes and Open WebUI are interfaces. They do not auto-send. The agent drafts, you approve.
+2. **Workspace context** (`AGENTS.md`, boot prompts, route files) — local instructions restate the source-of-truth hierarchy and approval boundary for Hermes sessions
+3. **Runtime posture** (`configs/hermes-profiles.md`, `overcr-hermes-preflight.sh`, Hermes configuration) — operators choose a Hermes tool posture appropriate to the route
 
-No configuration flag weakens this. No model override bypasses it. If you find a way around it, that's a bug, not a feature.
+The practical expectation is simple: Hermes may handle some approvals directly, especially command-risk approvals. OverCR still requires explicit operator approval for outbound or irreversible actions even when a runtime tool does not prompt.
+
+No OverCR route should intentionally weaken this. No model override should bypass it. If you find a route or profile that does, treat it as a configuration issue to fix.
 
 ---
 

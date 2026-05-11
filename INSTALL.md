@@ -50,14 +50,25 @@ hermes config set model qwen3-coder
 
 For cloud providers, keep API keys outside this repository. Use shell environment variables, your OS secret store, or Hermes configuration. Never commit keys.
 
+OverCR also includes a Hermes-readable repository context file, `AGENTS.md`. Hermes versions that load project context files can use it to see the local boot order, source-of-truth hierarchy, and approval boundary automatically when started from this workspace.
+
+Reference profile notes live at:
+
+```text
+configs/hermes-profiles.md
+```
+
+These notes describe conservative starting postures for `overcr-hq`, `cryer-readonly`, and `operator-approved-actions`. Use them as local Hermes profile guidance; the exact configuration command may vary by Hermes version.
+
 ## 3. Boot OverCR HQ
 
 ```bash
 cd "$OVERCR_ROOT"
+bash overcr-hermes-preflight.sh
 bash overcr-hq-localboot.sh
 ```
 
-The script creates expected directories, prepares the compact HQ boot prompt, and starts Hermes if available.
+The preflight check verifies the expected OverCR files and warns about Hermes posture issues such as missing config or yolo mode. The boot script creates expected directories, prepares the compact HQ boot prompt, and starts Hermes if available.
 
 Inside Hermes, send:
 
@@ -100,6 +111,8 @@ OverCR may research, summarize, score, draft, and organize. It may not contact a
 
 This applies across Hermes, Open WebUI, future routes, and future subagents.
 
+Hermes may enforce or prompt for some tool risks directly, especially around terminal commands. OverCR still treats the broader approval boundary as workspace doctrine and operator policy. If a runtime tool does not present an approval prompt for an outbound or irreversible action, ask the operator before proceeding.
+
 ## 8. Freezing a Release
 
 ```bash
@@ -121,3 +134,5 @@ Boot OverCR HQ from prompts/hq_compact_boot.md. Read soul.md first. Use filesyst
 ```
 
 If state seems wrong, inspect `overcr_state.json`, `configs/`, and `memory/routes/` before trusting chat history.
+
+If the preflight check reports Hermes posture warnings, review `configs/hermes-profiles.md` and your Hermes configuration before starting a route that can touch external systems.

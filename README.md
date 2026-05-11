@@ -68,6 +68,8 @@ Operator
 
 Hermes executes the live command-center route. Open WebUI can review files, prompts, and outputs. OverCR is the durable doctrine and state layer beneath both.
 
+This release includes a lightweight Hermes context file and preflight check so Hermes sessions can start with the OverCR workspace expectations visible. These files make the operating posture explicit; they are not a replacement for Hermes' own configuration and approval features.
+
 ## Governance Model
 
 OverCR follows **research autonomy with execution governance**.
@@ -96,6 +98,8 @@ Agents may not, without explicit human approval:
 
 This is doctrine, not a preference.
 
+Hermes may provide native prompts or guardrails for some command risks. OverCR's governance boundary is broader than terminal safety, so outbound and irreversible actions still require operator approval even when no runtime prompt appears.
+
 ## Source-of-Truth Hierarchy
 
 1. Filesystem state in the OverCR workspace
@@ -111,6 +115,7 @@ When there is conflict, trust durable files over chat.
 git clone <repo-url> overcr
 cd overcr
 export OVERCR_ROOT="$(pwd)"
+bash overcr-hermes-preflight.sh
 bash overcr-hq-localboot.sh
 ```
 
@@ -134,8 +139,10 @@ See [INSTALL.md](INSTALL.md) for full setup.
 overcr/
 ├── soul.md
 ├── soul_reference.md
+├── AGENTS.md
 ├── overcr_state.json
 ├── overcr-hq-localboot.sh
+├── overcr-hermes-preflight.sh
 ├── HQ_ROUTE_MARKER
 ├── HQ_BOOT_MANIFEST.md
 ├── HQ_BOOT_VERIFICATION.sh
@@ -146,6 +153,7 @@ overcr/
 ├── RELEASE_NOTES_v0.0.3.md
 ├── CLEAN_STRUCTURE_REPORT.md
 ├── configs/
+│   └── hermes-profiles.md
 ├── prompts/
 ├── memory/routes/hq/
 ├── tasks/
@@ -171,6 +179,8 @@ CryER may inspect public information and return structured recon. It may not log
 
 - OverCR identity doctrine
 - Hermes-first boot flow
+- Hermes context file and profile notes
+- Hermes preflight check
 - HQ route scaffolding
 - route memory directories
 - provider-agnostic runtime model
@@ -184,6 +194,7 @@ CryER may inspect public information and return structured recon. It may not log
 - Open WebUI sync bridge
 - automatic session ingestion pipeline
 - durable task graph implementation
+- automatic Hermes policy enforcement beyond documented profile checks
 - production installer
 - CI/CD
 - hosted service

@@ -48,6 +48,7 @@ PROMPT
 echo "[OverCR HQ] Boot file ready: $COMPACT_BOOT"
 echo "[OverCR HQ] OverCR_ROOT=$OVERCR_ROOT"
 echo "[OverCR HQ] OVERCR_INSTANCE_ID=$OVERCR_INSTANCE_ID"
+echo "[OverCR HQ] Optional preflight: bash overcr-hermes-preflight.sh"
 echo
 echo "First message inside Hermes:"
 echo "Boot OverCR HQ from prompts/hq_compact_boot.md"

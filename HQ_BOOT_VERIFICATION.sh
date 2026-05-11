@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # OverCR HQ Boot Verification
 # Run this to confirm stable operational continuity
 # All paths are environment-driven for portability
@@ -35,7 +36,23 @@ else
 fi
 
 echo ""
-echo "4. Config Files"
+echo "4. Hermes Context"
+if [ -f "$OVERCR_ROOT/AGENTS.md" ]; then
+    echo "   [OK] AGENTS.md exists"
+else
+    echo "   [FAIL] AGENTS.md missing"
+    exit 1
+fi
+
+if [ -f "$OVERCR_ROOT/overcr-hermes-preflight.sh" ]; then
+    echo "   [OK] overcr-hermes-preflight.sh exists"
+else
+    echo "   [FAIL] overcr-hermes-preflight.sh missing"
+    exit 1
+fi
+
+echo ""
+echo "5. Config Files"
 if [ -f "$OVERCR_ROOT/configs/cag-memory-config.json" ]; then
     echo "   [OK] cag-memory-config.json exists"
 else
@@ -48,8 +65,14 @@ else
     echo "   [FAIL] session-ingestion-config.json missing"
 fi
 
+if [ -f "$OVERCR_ROOT/configs/hermes-profiles.md" ]; then
+    echo "   [OK] hermes-profiles.md exists"
+else
+    echo "   [FAIL] hermes-profiles.md missing"
+fi
+
 echo ""
-echo "5. Release Artifacts Separation"
+echo "6. Release Artifacts Separation"
 ARCHIVE_ROOT="${OVERCR_RELEASE_ARCHIVE:-${OVERCR_ROOT}/../releases}"
 if [ -d "$ARCHIVE_ROOT" ]; then
     echo "   [OK] Release archive at $ARCHIVE_ROOT"
@@ -58,7 +81,7 @@ else
 fi
 
 echo ""
-echo "6. Environment Check"
+echo "7. Environment Check"
 echo "   OVERCR_ROOT: $OVERCR_ROOT"
 echo "   HERMES_HOME: ${HERMES_HOME:-$HOME/.hermes}"
 echo "   OVERCR_INSTANCE_ID: ${OVERCR_INSTANCE_ID:-not set}"
