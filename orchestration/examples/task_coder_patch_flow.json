@@ -1,0 +1,156 @@
+{
+  "flow_description": "CodER patch task: a single-task flow where CodER implements a code fix, producing a completion packet with deliverables, diagnostics, and rollback instructions.",
+  "flow_steps": [
+    {
+      "step": 1,
+      "phase": "task_creation",
+      "note": "Operator requests a bug fix in the validate_packet.py tool — it currently doesn't check ISO 8601 timestamp format."
+    },
+    {
+      "step": 2,
+      "phase": "request_packet",
+      "packet": {
+        "task_id": "task-0005",
+        "assigned_subagent": "coder",
+        "domain": "code",
+        "instruction": "Fix the ISO 8601 timestamp validation in orchestration/tools/validate_packet.py. Currently the validator checks that a timestamp field exists but does not verify it is valid ISO 8601 format. Add a regex or datetime parse check. Ensure the change is reversible and add a test case.",
+        "input_context": {
+          "entity": "validate_packet.py",
+          "type": "code",
+          "focus_areas": ["timestamp_validation", "regex_fix", "test_case"],
+          "upstream_task_id": null,
+          "current_behavior": "Timestamp field checked for existence only, not format validity",
+          "desired_behavior": "Timestamp field must be valid ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ or with timezone offset)"
+        },
+        "constraints": [
+          "Change must be reversible.",
+          "Add test case for valid and invalid timestamps.",
+          "Do not modify other validation levels without explicit instruction.",
+          "No production deployment — local testing only."
+        ],
+        "required_packet_type": "coder_completion",
+        "created_at": "2026-05-10T17:00:00Z"
+      }
+    },
+    {
+      "step": 3,
+      "phase": "task_state_transitions",
+      "transitions": [
+        {"state": "created", "timestamp": "2026-05-10T17:00:00Z", "note": "Task created by OverCR operator request"},
+        {"state": "assigned", "timestamp": "2026-05-10T17:00:05Z", "note": "Assigned to CodER"},
+        {"state": "in_progress", "timestamp": "2026-05-10T17:00:10Z", "note": "CodER began implementation"}
+      ]
+    },
+    {
+      "step": 4,
+      "phase": "response_packet",
+      "packet": {
+        "packet_type": "coder_completion",
+        "version": "1.0",
+        "timestamp": "2026-05-10T17:35:00Z",
+        "source": "coder",
+        "target": "overcr",
+        "task_id": "task-0005",
+        "summary": "Fixed ISO 8601 timestamp validation in validate_packet.py. Added regex-based format check and datetime parse fallback. Added 4 test cases (2 valid, 2 invalid timestamps). All tests passing.",
+        "completion_data": {
+          "deliverables": [
+            {
+              "type": "fix",
+              "path": "orchestration/tools/validate_packet.py",
+              "description": "Added validate_iso8601() function that checks timestamp format via regex (YYYY-MM-DDTHH:MM:SS with optional timezone) and falls back to datetime.fromisoformat() parse. Integrated into Level 1 structural validation.",
+              "language": "python",
+              "reversible": true,
+              "tests_passed": true,
+              "breaking_changes": false
+            },
+            {
+              "type": "test",
+              "path": "orchestration/tools/test_validate_packet.py",
+              "description": "Test suite for validate_packet.py including 4 timestamp validation cases: valid ISO 8601 with Z suffix, valid with offset, invalid date format, and empty string.",
+              "language": "python",
+              "reversible": true,
+              "tests_passed": true,
+              "breaking_changes": false
+            }
+          ],
+          "diagnostics": [],
+          "research_requests": []
+        },
+        "approval_required": false,
+        "next_steps_recommendation": "Change is reversible and tests pass. Ready to merge. No further subagent routing needed.",
+        "audit_trail": {
+          "files_modified": [
+            "orchestration/tools/validate_packet.py",
+            "orchestration/tools/test_validate_packet.py"
+          ],
+          "commands_run": [
+            "python orchestration/tools/test_validate_packet.py -v"
+          ],
+          "rollback_instructions": "Revert validate_packet.py to pre-task version (git checkout orchestration/tools/validate_packet.py) and delete test_validate_packet.py."
+        }
+      }
+    },
+    {
+      "step": 5,
+      "phase": "validation_result",
+      "result": {
+        "valid": true,
+        "packet_type": "coder_completion",
+        "source": "coder",
+        "task_id": "task-0005",
+        "timestamp": "2026-05-10T17:35:01Z",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "step": 6,
+      "phase": "routing_decision",
+      "decision": {
+        "routing_target": "operator",
+        "reason": "Code change is reversible, tests pass, no breaking changes. Present to operator for review and optional merge.",
+        "creates_downstream_task": false
+      }
+    },
+    {
+      "step": 7,
+      "phase": "operator_facing_packet",
+      "packet": {
+        "operator_packet_type": "task_summary",
+        "task_id": "task-0005",
+        "upstream_task_id": null,
+        "state": "completed",
+        "subagent": "coder",
+        "packet_type": "coder_completion",
+        "summary": "Fixed ISO 8601 timestamp validation in validate_packet.py. Added regex + datetime parse check and 4 test cases. All tests passing.",
+        "key_findings": [
+          "validate_iso8601() function added to validate_packet.py",
+          "Regex check for YYYY-MM-DDTHH:MM:SS format with optional timezone",
+          "Falls back to datetime.fromisoformat() for strict parsing",
+          "4 test cases added: 2 valid, 2 invalid timestamps",
+          "All tests pass"
+        ],
+        "risk_flags": [
+          "None — change is reversible and non-breaking"
+        ],
+        "approval_required": false,
+        "next_steps": [
+          "Review the code change if desired",
+          "Merge at operator's discretion",
+          "Run full validation suite on example packets to confirm no regressions"
+        ],
+        "routing_suggestion": "No further subagent routing needed. Operator can merge directly.",
+        "timestamp": "2026-05-10T17:35:05Z"
+      }
+    }
+  ],
+  "state_log": [
+    {"task_id": "task-0005", "state": "created", "timestamp": "2026-05-10T17:00:00Z", "note": "Operator requested timestamp validation fix"},
+    {"task_id": "task-0005", "state": "assigned", "timestamp": "2026-05-10T17:00:05Z", "note": "Assigned to CodER"},
+    {"task_id": "task-0005", "state": "in_progress", "timestamp": "2026-05-10T17:00:10Z", "note": "CodER began implementation"},
+    {"task_id": "task-0005", "state": "response_received", "timestamp": "2026-05-10T17:35:00Z", "note": "coder_completion packet received"},
+    {"task_id": "task-0005", "state": "validation_passed", "timestamp": "2026-05-10T17:35:01Z", "note": "Packet validated successfully"},
+    {"task_id": "task-0005", "state": "routed", "timestamp": "2026-05-10T17:35:03Z", "note": "Routed to operator for review"},
+    {"task_id": "task-0005", "state": "completed", "timestamp": "2026-05-10T17:35:05Z", "note": "Task completed. No approval required."}
+  ]
+}

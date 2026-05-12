@@ -1,0 +1,42 @@
+{
+  "packet_type": "cryer_reputation_signal",
+  "version": "1.0",
+  "timestamp": "2026-05-10T18:30:00Z",
+  "source": "cryer",
+  "target": "overcr",
+  "task_id": "task-0020",
+  "summary": "CryER reputation signal analysis for: Acme Corp",
+  "reputation_signal_data": {
+    "entity": "Acme Corp",
+    "signals": [
+      {
+        "type": "rating",
+        "classification": "observed",
+        "confidence": 85,
+        "detail": "4.5-star average across 120 reviews",
+        "source_quality": "primary",
+        "unknowns": ["Exact review distribution not available"]
+      },
+      {
+        "type": "sentiment",
+        "classification": "inferred",
+        "confidence": 72,
+        "detail": "Predominantly positive sentiment in recent reviews",
+        "source_quality": "secondary",
+        "unknowns": ["Sentiment analysis limited to provided text"]
+      }
+    ],
+    "yield_score": 78,
+    "confidence_notes": "High confidence based on 2 observed signals. Direct verification recommended for exact metrics.",
+    "recommended_routing": "overcr"
+  },
+  "audit_trail": {
+    "worker_version": "0.4.0",
+    "execution_timestamp": "2026-05-10T18:30:01Z",
+    "methods_used": ["public_signal_analysis"],
+    "files_modified": [],
+    "rollback_instructions": "No filesystem changes made by worker. Analysis only."
+  },
+  "approval_required": false,
+  "next_steps_recommendation": "No external action needed. Route to OverCR for downstream handling."
+}

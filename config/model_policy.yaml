@@ -1,0 +1,232 @@
+# OverCR v0.2.1 Model Policy Configuration
+# ==========================================
+#
+# Governance constraints for model routing decisions.
+# These policies enforce sovereignty, approval gates, and capability boundaries.
+#
+# The policy layer sits between model routing and runtime execution:
+#   - Validates routing decisions against governance rules
+#   - Enforces downgrade constraints (fallback never gains authority)
+#   - Blocks forbidden capabilities per route/subagent
+#   - Tracks capability restrictions in audit log
+#
+# Priority: route/subagent config < model policy < runtime execution
+#
+# Format:
+#   _policies:
+#     routes:
+#       <route_name>:
+#         allowed_capabilities: [...]
+#         forbidden_capabilities: [...]
+#         minimum_model_class: "standard"|"advanced"|"expert"
+#         preferred_model_class: "standard"|"advanced"|"expert"
+#     subagents:
+#       <subagent_name>:
+#         allowed_capabilities: [...]
+#         forbidden_capabilities: [...]
+#         minimum_model_class: "standard"|"advanced"|"expert"
+#         preferred_model_class: "standard"|"advanced"|"expert"
+#
+# Model class hierarchy (increasing capability):
+#   "secure" → "basic" → "standard" → "advanced" → "expert"
+#
+# Key constraints:
+#   - Model downgrade must NOT gain capabilities (no escalation)
+#   - Governance-sensitive tasks require minimum_model_class
+#   - Local models restricted from network/retrieval roles
+#   - Fallback must preserve approval and sovereignty rules
+
+version: "0.2.1"
+
+_routes:
+  # OverCR HQ - requires expert model, no network access
+  overcr_hq:
+    allowed_capabilities: ["readonly", "analysis", "local_only"]
+    forbidden_capabilities: ["network", "retrieval", "outbound"]
+    minimum_model_class: "expert"
+    preferred_model_class: "expert"
+    approval_required: true
+    sovereignty: "local"
+
+  # Code tasks - standard+ models allowed
+  code:
+    allowed_capabilities: ["code_generation", "analysis", "local_only", "readonly"]
+    forbidden_capabilities: ["network", "retrieval", "outbound"]
+    minimum_model_class: "standard"
+    preferred_model_class: "advanced"
+    approval_required: false
+    sovereignty: "local"
+
+  # Research tasks - advanced+ models required
+  research:
+    allowed_capabilities: ["research", "analysis", "readonly"]
+    forbidden_capabilities: ["network", "retrieval", "outbound"]
+    minimum_model_class: "advanced"
+    preferred_model_class: "expert"
+    approval_required: false
+    sovereignty: "local"
+
+  # Diagnostics - standard+ models
+  diagnostics:
+    allowed_capabilities: ["diagnostics", "analysis", "local_only", "readonly"]
+    forbidden_capabilities: ["network", "retrieval", "outbound"]
+    minimum_model_class: "standard"
+    preferred_model_class: "advanced"
+    approval_required: false
+    sovereignty: "local"
+
+  # Analysis tasks - advanced+ models
+  analysis:
+    allowed_capabilities: ["analysis", "readonly"]
+    forbidden_capabilities: ["network", "retrieval", "outbound"]
+    minimum_model_class: "advanced"
+    preferred_model_class: "advanced"
+    approval_required: false
+    sovereignty: "local"
+
+  # Outreach tasks - requires approval, network-capable models
+  outreach:
+    allowed_capabilities: ["outreach", "research", "analysis"]
+    forbidden_capabilities: ["local_only"]
+    minimum_model_class: "standard"
+    preferred_model_class: "advanced"
+    approval_required: true
+    sovereignty: "local"
+
+  # Recon tasks - requires approval, network-capable models
+  recon:
+    allowed_capabilities: ["recon", "research", "analysis"]
+    forbidden_capabilities: ["local_only"]
+    minimum_model_class: "advanced"
+    preferred_model_class: "advanced"
+    approval_required: true
+    sovereignty: "local"
+
+  # Local boot tasks - only secure/basic models, NO network
+  local_boot:
+    allowed_capabilities: ["local_only", "readonly"]
+    forbidden_capabilities: ["network", "retrieval", "outbound"]
+    minimum_model_class: "secure"
+    preferred_model_class: "basic"
+    approval_required: false
+    sovereignty: "local"
+
+  # Default route - standard+ models
+  default:
+    allowed_capabilities: ["analysis", "readonly", "local_only"]
+    forbidden_capabilities: ["network", "retrieval", "outbound"]
+    minimum_model_class: "standard"
+    preferred_model_class: "standard"
+    approval_required: false
+    sovereignty: "local"
+
+_subagents:
+  # Coder - code generation with readonly constraints
+  coder:
+    allowed_capabilities: ["code_generation", "analysis", "local_only", "readonly"]
+    forbidden_capabilities: ["network", "retrieval", "outbound"]
+    minimum_model_class: "standard"
+    preferred_model_class: "advanced"
+    approval_required: false
+    sovereignty: "local"
+
+  # KnowER - research with strict local constraints
+  knower:
+    allowed_capabilities: ["research", "analysis", "readonly"]
+    forbidden_capabilities: ["network", "retrieval", "outbound"]
+    minimum_model_class: "advanced"
+    preferred_model_class: "expert"
+    approval_required: false
+    sovereignty: "local"
+
+  # CryER - recon with approval required
+  cryer:
+    allowed_capabilities: ["recon", "research", "analysis"]
+    forbidden_capabilities: ["local_only"]
+    minimum_model_class: "advanced"
+    preferred_model_class: "advanced"
+    approval_required: true
+    sovereignty: "local"
+
+  # PypER - outreach with high approval requirement
+  pyper:
+    allowed_capabilities: ["outreach", "research", "analysis"]
+    forbidden_capabilities: ["local_only"]
+    minimum_model_class: "standard"
+    preferred_model_class: "advanced"
+    approval_required: true
+    sovereignty: "local"
+
+_model_classes:
+  # Model class hierarchy and their capabilities
+  # Lower classes are subsets of higher classes
+  secure:
+    capabilities: ["readonly"]
+    max_token_output: 1000
+    max_context: 4096
+    network_allowed: false
+
+  basic:
+    capabilities: ["readonly", "local_only"]
+    max_token_output: 2000
+    max_context: 8192
+    network_allowed: false
+
+  standard:
+    capabilities: ["readonly", "local_only", "analysis"]
+    max_token_output: 4000
+    max_context: 16384
+    network_allowed: false
+
+  advanced:
+    capabilities: ["readonly", "local_only", "analysis", "research", "diagnostics"]
+    max_token_output: 8000
+    max_context: 32768
+    network_allowed: false
+
+  expert:
+    capabilities: ["readonly", "local_only", "analysis", "research", "diagnostics", "code_generation", "outreach", "recon"]
+    max_token_output: 16000
+    max_context: 65536
+    network_allowed: false
+
+approval_gate:
+  # Approval requirements per task type
+  # True = requires human approval before execution
+  # False = can proceed without approval
+
+  tasks_requiring_approval:
+    - "cryer.alert"
+    - "cryer.recon"
+    - "pyper.approval"
+    - "overcr_hq.*"
+
+  tasks_allowed_without_approval:
+    - "knower.research"
+    - "knower.assessment"
+    - "coder.completion"
+    - "coder.diagnostic"
+
+audit_policy:
+  # What must be logged in audit trail
+  required_fields:
+    - "model_selected"
+    - "route_used"
+    - "subagent"
+    - "capability_restrictions_applied"
+    - "fallback_reason"  # if fallback occurred
+
+  log_fallback_decisions: true
+  log_capability_check: true
+  log_sovereignty_violation: true
+
+validation:
+  # Validation level for routing decisions
+  # 1 = basic syntax check
+  # 2 = capability overlap check
+  # 3 = approval gate check
+  # 4 = sovereignty check
+  # 5 = full validation (recommended for production)
+
+  default_level: 4
+  enforce_on_fallback: true

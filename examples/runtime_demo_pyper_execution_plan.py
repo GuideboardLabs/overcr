@@ -1,0 +1,272 @@
+#!/usr/bin/env python3
+"""
+OverCR v0.7.0 — PypER Execution Plan Runtime Demo
+===================================================
+
+Demonstrates the PypER inference worker producing a governed execution-plan
+packet with full validation, zero autonomous execution, and deterministic
+fallback.
+
+This demo:
+  1. Loads inference routing config
+  2. Invokes the PypER inference worker (mock adapter by default)
+  3. Validates the output through the 6-level validator
+  4. Falls back to deterministic worker if adapter unavailable
+  5. Produces a typed pyper_execution_plan packet with audit trail
+  6. Verifies no autonomous execution occurred
+
+Governance guarantees:
+  - PypER may PREPARE and DESCRIBE execution — it may NOT execute
+  - execution_authority is always "none"
+  - approval_required=true enforced at L4 and L6
+  - No shell commands executed automatically
+  - No filesystem mutation in inference mode
+  - No package installs allowed
+  - No remote execution patterns allowed
+  - Model output is untrusted until sanitized and validated
+  - Deterministic fallback always available
+
+Usage:
+  python3 examples/runtime_demo_pyper_execution_plan.py
+"""
+
+import json
+import sys
+import os
+import subprocess
+import importlib.util
+from pathlib import Path
+from datetime import datetime, timezone
+
+# Bootstrap project root
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+
+def load_routing_config() -> dict:
+    """Load inference routing configuration."""
+    config_path = ROOT / "config" / "inference_routing.yaml"
+    if not config_path.exists():
+        print(f"[WARN] Config not found: {config_path}")
+        return {}
+
+    try:
+        import yaml
+        with open(config_path, "r") as f:
+            return yaml.safe_load(f) or {}
+    except ImportError:
+        print("[WARN] PyYAML not available, using defaults")
+        return {}
+
+
+def validate_packet_fn(packet: dict) -> tuple:
+    """Validate inference output through the 6-level validator."""
+    validate_path = ROOT / "tools" / "validate_packet.py"
+    spec = importlib.util.spec_from_file_location("validate_packet", str(validate_path))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    result = mod.validate_packet(packet)
+    if isinstance(result, tuple):
+        return result
+    return (
+        result.valid if hasattr(result, "valid") else False,
+        result.errors if hasattr(result, "errors") else [],
+        result.warnings if hasattr(result, "warnings") else [],
+    )
+
+
+def invoke_pyper_worker(request: dict, timeout: float = 15.0) -> dict:
+    """Invoke the PypER inference worker as a subprocess."""
+    worker_path = ROOT / "subagents" / "pyper" / "inference_worker.py"
+    if not worker_path.exists():
+        return {"exit_code": -1, "stdout": "", "stderr": f"Worker not found: {worker_path}"}
+
+    try:
+        result = subprocess.run(
+            [sys.executable, str(worker_path)],
+            input=json.dumps(request),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            cwd=str(ROOT),
+        )
+        return {
+            "exit_code": result.returncode,
+            "stdout": result.stdout,
+            "stderr": result.stderr,
+        }
+    except subprocess.TimeoutExpired:
+        return {"exit_code": -2, "stdout": "", "stderr": "Worker timed out"}
+
+
+def run_demo():
+    """Run the PypER execution plan runtime demo."""
+    print("=" * 70)
+    print("OverCR v0.7.0 — PypER Execution Plan Runtime Demo")
+    print("=" * 70)
+
+    # 1. Load config
+    config = load_routing_config()
+    pyper_config = config.get("_pyper", {})
+    execution_plan_cfg = pyper_config.get("execution_plan", {})
+    governance = config.get("_governance", {})
+
+    print(f"\n[CONFIG] Domain: execution_plan")
+    print(f"[CONFIG] Adapter: {execution_plan_cfg.get('adapter', 'mock')}")
+    print(f"[CONFIG] Model: {execution_plan_cfg.get('model', 'glm-5.1:cloud')}")
+    print(f"[CONFIG] Provider: {execution_plan_cfg.get('provider', 'ollama-cloud')}")
+    print(f"[CONFIG] Fallback model: {execution_plan_cfg.get('fallback_model', 'N/A')}")
+    print(f"[CONFIG] Fallback to deterministic: {execution_plan_cfg.get('fallback_to_deterministic', True)}")
+    print(f"[CONFIG] Timeout: {execution_plan_cfg.get('timeout_s', 45)}s")
+
+    # 2. Construct the request
+    task_id = "task-0700"
+    request = {
+        "task_id": task_id,
+        "domain": "execution_plan",
+        "instruction": "Plan a read-only system health check for the local environment",
+        "input_context": {
+            "entity": "local-environment",
+            "task_description": "Verify environment prerequisites and system state without mutation",
+        },
+        "required_packet_type": "pyper_execution_plan",
+    }
+
+    print(f"\n[REQUEST] Task: {task_id}")
+    print(f"[REQUEST] Domain: execution_plan")
+    print(f"[REQUEST] Entity: {request['input_context']['entity']}")
+
+    # 3. Invoke the PypER inference worker
+    print(f"\n[INVOKE] Running PypER inference worker...")
+    start_time = datetime.now(timezone.utc)
+
+    result = invoke_pyper_worker(request)
+
+    elapsed = (datetime.now(timezone.utc) - start_time).total_seconds()
+    print(f"[INVOKE] Exit code: {result['exit_code']}")
+    print(f"[INVOKE] Elapsed: {elapsed:.2f}s")
+
+    if result["exit_code"] != 0:
+        print(f"\n[ERROR] Worker exited with code {result['exit_code']}")
+        print(f"[ERROR] stderr: {result['stderr'][:300]}")
+        return False
+
+    # 4. Parse the output
+    try:
+        packet = json.loads(result["stdout"])
+    except json.JSONDecodeError:
+        print(f"\n[ERROR] Worker output is not valid JSON")
+        print(f"[ERROR] First 200 chars: {result['stdout'][:200]}")
+        return False
+
+    print(f"\n[OUTPUT] Packet type: {packet.get('packet_type', 'unknown')}")
+    print(f"[OUTPUT] Version: {packet.get('version', 'unknown')}")
+    print(f"[OUTPUT] Source: {packet.get('source', 'unknown')}")
+    print(f"[OUTPUT] Target: {packet.get('target', 'unknown')}")
+    print(f"[OUTPUT] Task ID: {packet.get('task_id', 'unknown')}")
+
+    # 5. Validate the packet
+    print(f"\n[VALIDATE] Running 6-level validation...")
+    valid, errors, warnings = validate_packet_fn(packet)
+
+    print(f"[VALIDATE] Valid: {valid}")
+    print(f"[VALIDATE] Errors: {len(errors)}")
+    for e in errors[:5]:
+        print(f"  - {e}")
+    if len(errors) > 5:
+        print(f"  ... and {len(errors) - 5} more")
+    print(f"[VALIDATE] Warnings: {len(warnings)}")
+    for w in warnings[:3]:
+        print(f"  - {w}")
+
+    # 6. Check safety guarantees
+    print(f"\n[SAFETY] Checking PypER safety guarantees...")
+
+    # approval_required must be True
+    approval = packet.get("approval_required")
+    if approval is True:
+        print(f"[SAFETY] PASS: approval_required=True enforced")
+    else:
+        print(f"[SAFETY] FAIL: approval_required={approval} (expected True)")
+        valid = False
+
+    # execution_authority must be "none"
+    authority = packet.get("execution_authority", packet.get("audit_trail", {}).get("execution_authority"))
+    if authority in (None, "none"):
+        print(f"[SAFETY] PASS: execution_authority is '{authority}' — no autonomous execution")
+    else:
+        print(f"[SAFETY] FAIL: execution_authority={authority} (expected 'none')")
+        valid = False
+
+    # Target must be "overcr"
+    target = packet.get("target")
+    if target == "overcr":
+        print(f"[SAFETY] PASS: Target is 'overcr' (no direct subagent routing)")
+    else:
+        print(f"[SAFETY] FAIL: Target is '{target}' (direct routing detected)")
+        valid = False
+
+    # No commands executed
+    audit = packet.get("audit_trail", {})
+    commands_executed = audit.get("commands_executed", 0)
+    if commands_executed == 0:
+        print(f"[SAFETY] PASS: No commands executed (commands_executed=0)")
+    else:
+        print(f"[SAFETY] FAIL: Commands were executed (commands_executed={commands_executed})")
+        valid = False
+
+    # 7. Display execution plan data
+    ep = packet.get("execution_plan_data", {})
+    if ep:
+        print(f"\n[PLAN] Plan description: {ep.get('plan_description', 'N/A')[:80]}...")
+        print(f"[PLAN] Entity: {ep.get('entity', 'N/A')}")
+        print(f"[PLAN] Risk level: {ep.get('risk_level', 'N/A')}")
+
+        steps = ep.get("steps", [])
+        print(f"[PLAN] Steps: {len(steps)}")
+        for step in steps:
+            safety = step.get("safety_classification", "unknown")
+            print(f"  [{step.get('step_index', '?')}] {step.get('description', 'N/A')[:60]}... (safety: {safety})")
+
+        dep = ep.get("dependency_analysis", {})
+        print(f"[PLAN] Dependencies: {dep.get('dependencies', [])}")
+        print(f"[PLAN] Missing: {dep.get('missing', [])}")
+
+        print(f"[PLAN] Dry-run summary: {ep.get('dry_run_summary', 'N/A')[:80]}...")
+        print(f"[PLAN] Rollback plan: {ep.get('rollback_plan', 'N/A')[:60]}...")
+        print(f"[PLAN] Sandbox recommendation: {ep.get('sandbox_recommendation', 'N/A')[:60]}...")
+
+    # 8. Display audit trail
+    print(f"\n[AUDIT] Inference mode: {audit.get('inference_mode', 'N/A')}")
+    print(f"[AUDIT] Inference source: {audit.get('inference_source', 'N/A')}")
+    print(f"[AUDIT] Selected model: {audit.get('selected_model', 'N/A')}")
+    print(f"[AUDIT] Selected provider: {audit.get('selected_provider', 'N/A')}")
+    print(f"[AUDIT] Route used: {audit.get('route_used', 'N/A')}")
+    print(f"[AUDIT] Attempt ID: {audit.get('inference_attempt_id', 'N/A')}")
+    print(f"[AUDIT] Prompt hash: {audit.get('prompt_hash', 'N/A')}")
+    print(f"[AUDIT] Fallback used: {audit.get('fallback_used', 'N/A')}")
+    print(f"[AUDIT] Elapsed: {audit.get('elapsed_s', 'N/A')}s")
+    print(f"[AUDIT] Execution authority: {audit.get('execution_authority', 'N/A')}")
+
+    # 9. Summary
+    print(f"\n{'=' * 70}")
+    if valid:
+        print("DEMO RESULT: PASS")
+        print(f"  Inference source: {audit.get('inference_source', 'unknown')}")
+        print(f"  Validation: PASSED (L1-L6)")
+        print(f"  Safety: ZERO autonomous execution, approval gate enforced")
+        print(f"  Packet type: {packet.get('packet_type', 'unknown')}")
+        print(f"  Execution authority: none (commands planned but NOT executed)")
+    else:
+        print("DEMO RESULT: FAIL")
+        print(f"  Validation: FAILED ({len(errors)} errors)")
+        print(f"  Safety violations detected")
+    print(f"{'=' * 70}")
+
+    return valid
+
+
+if __name__ == "__main__":
+    success = run_demo()
+    sys.exit(0 if success else 1)

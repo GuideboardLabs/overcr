@@ -1,0 +1,297 @@
+{
+  "flow_description": "KnowER research → PypER outreach: a two-task flow where KnowER verifies market claims and PypER drafts outreach backed by verified research rather than hype.",
+  "flow_steps": [
+    {
+      "step": 1,
+      "phase": "task_creation",
+      "note": "Operator requests research on technology adoption claims in a target market, separating verified facts from vendor hype."
+    },
+    {
+      "step": 2,
+      "phase": "request_packet",
+      "packet": {
+        "task_id": "task-0003",
+        "assigned_subagent": "knower",
+        "domain": "research",
+        "instruction": "Research technology adoption rates among small enterprises in Region X. Specifically: verify or debunk the claim that 'most small businesses in this region are already adopting AI tools.' Separate verified facts from vendor hype. Provide confidence-rated findings suitable for outreach personalization.",
+        "input_context": {
+          "entity": "Region X small enterprise AI adoption trends",
+          "type": "domain",
+          "focus_areas": ["adoption_rates", "market_claims", "myth_separation"],
+          "upstream_task_id": null
+        },
+        "constraints": [
+          "Public sources only.",
+          "Rate every claim with confidence level 1-4.",
+          "Flag vendor-sponsored claims.",
+          "No speculation presented as fact."
+        ],
+        "required_packet_type": "knower_research",
+        "created_at": "2026-05-10T15:00:00Z"
+      }
+    },
+    {
+      "step": 3,
+      "phase": "task_state_transitions",
+      "transitions": [
+        {"state": "created", "timestamp": "2026-05-10T15:00:00Z", "note": "Task created by OverCR operator request"},
+        {"state": "assigned", "timestamp": "2026-05-10T15:00:05Z", "note": "Assigned to KnowER"},
+        {"state": "in_progress", "timestamp": "2026-05-10T15:00:10Z", "note": "KnowER began research"}
+      ]
+    },
+    {
+      "step": 4,
+      "phase": "response_packet",
+      "packet": {
+        "packet_type": "knower_research",
+        "version": "1.0",
+        "timestamp": "2026-05-10T15:45:00Z",
+        "source": "knower",
+        "target": "overcr",
+        "task_id": "task-0003",
+        "upstream_task_id": null,
+        "summary": "Region X small enterprise AI adoption: verified rate is 18-22%, not 'most.' The 50% claim originates from a vendor opinion piece and is debunked. Growth trend is real (~5 percentage points year-over-year) but modest. Outreach should cite verified figures, not hype.",
+        "research_data": {
+          "topic": "Technology adoption rates in Region X small enterprise sector",
+          "findings": [
+            {
+              "claim": "Small enterprises in Region X are adopting AI-powered tools at an 18-22% rate as of the most recent available reporting",
+              "confidence": 3,
+              "sources": [
+                {"reference": "Regional Business Association annual survey, 2025", "reliability": "medium", "supports": true},
+                {"reference": "Public Economic Development SME Technology Adoption Report", "reliability": "medium", "supports": true}
+              ],
+              "contradictions": [],
+              "gaps": ["Region-specific data is limited; broader area data used as proxy"]
+            },
+            {
+              "claim": "AI adoption among small enterprises in Region X will reach 50% within two years",
+              "confidence": 1,
+              "sources": [
+                {"reference": "Vendor CEO opinion piece in Regional Tech Monthly", "reliability": "low", "supports": true}
+              ],
+              "contradictions": ["Independent research forecast puts the figure at 25-30% for this segment"],
+              "gaps": ["No independent verification of 50% claim", "Source has commercial interest in promoting adoption"]
+            }
+          ],
+          "myths_rumors_separated": [
+            {
+              "claim": "Most small enterprises in Region X are already adopting AI tools",
+              "status": "debunked",
+              "evidence_against": ["Public data shows 18-22% adoption, not 'most'", "Regional Business Association survey: only 1 in 5 small enterprises reports active AI tool usage"],
+              "evidence_for": ["Vendor marketing materials inflate definition of 'adoption' to include basic cloud services"],
+              "confidence": 3
+            }
+          ],
+          "statistical_summary": {
+            "available": true,
+            "data_points": 4,
+            "methodology": "Public report aggregation and cross-referencing",
+            "key_metrics": [
+              {"metric": "Current adoption rate (Region X small enterprises)", "value": "18-22%", "confidence": 3},
+              {"metric": "Year-over-year adoption growth", "value": "~5 percentage points", "confidence": 2},
+              {"metric": "Projected adoption in 2 years (independent estimate)", "value": "25-30%", "confidence": 2},
+              {"metric": "Projected adoption in 2 years (vendor claim)", "value": "50%", "confidence": 1}
+            ]
+          }
+        },
+        "next_steps_recommendation": "Route to PypER for outreach personalization. Emphasize the verified growth trend (18-22% and rising) — this supports the value proposition WITHOUT repeating the debunked 50% myth. Flag the myth explicitly so PypER avoids citing it.",
+        "audit_trail": {
+          "sources_consulted": [
+            "Regional Business Association annual survey (2025)",
+            "Public Economic Development SME Technology Adoption Report",
+            "Independent research forecast (2024)",
+            "Vendor CEO opinion piece in Regional Tech Monthly"
+          ],
+          "research_duration_estimate": "moderate — 4 public sources cross-referenced",
+          "methodology_notes": "Region-specific data is limited. Broader area data used as proxy. Confidence levels reflect this limitation."
+        }
+      }
+    },
+    {
+      "step": 5,
+      "phase": "validation_result",
+      "result": {
+        "valid": true,
+        "packet_type": "knower_research",
+        "source": "knower",
+        "task_id": "task-0003",
+        "timestamp": "2026-05-10T15:45:01Z",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "step": 6,
+      "phase": "routing_decision",
+      "decision": {
+        "routing_target": "pyper",
+        "reason": "KnowER research provides verified facts that can be used for evidence-backed outreach. Debunked 50% claim must be flagged to PypER so it is not cited.",
+        "creates_downstream_task": true
+      }
+    },
+    {
+      "step": 7,
+      "phase": "downstream_request_packet",
+      "packet": {
+        "task_id": "task-0004",
+        "assigned_subagent": "pyper",
+        "domain": "outreach",
+        "instruction": "Draft personalized outreach for Region X small enterprises based on KnowER research from task-0003. Use verified adoption data (18-22%, growing ~5pp/year). Do NOT cite the debunked 50% claim. Emphasize the growth opportunity without hype.",
+        "input_context": {
+          "entity": "Region X small enterprises — technology adoption outreach",
+          "type": "domain",
+          "focus_areas": ["outreach_drafting", "evidence_backed_personalization", "myth_avoidance"],
+          "upstream_task_id": "task-0003",
+          "research_summary": {
+            "verified_adoption_rate": "18-22%",
+            "growth_trend": "~5 percentage points year-over-year",
+            "debunked_claim": "50% adoption within 2 years — do NOT cite",
+            "key_differentiator": "Growth is real but modest — position as early-mover advantage"
+          }
+        },
+        "constraints": [
+          "All drafts require operator approval before any outbound action.",
+          "Evidence citations required for every personalization claim.",
+          "Do NOT cite the debunked 50% adoption claim.",
+          "Tone: evidence-backed, consultative, no hype."
+        ],
+        "required_packet_type": "pyper_approval",
+        "created_at": "2026-05-10T15:50:00Z"
+      }
+    },
+    {
+      "step": 8,
+      "phase": "downstream_response_packet",
+      "packet": {
+        "packet_type": "pyper_approval",
+        "version": "1.0",
+        "timestamp": "2026-05-10T16:15:00Z",
+        "source": "pyper",
+        "target": "overcr",
+        "task_id": "task-0004",
+        "upstream_task_id": "task-0003",
+        "summary": "Outreach draft for Region X small enterprises — evidence-backed, avoids myth, emphasizes verified growth trend as early-mover opportunity.",
+        "draft_data": {
+          "prospects": [
+            {
+              "entity": "Region X small businesses (early-adopter segment)",
+              "approach_type": "cold_email",
+              "personalization_signals": [
+                "Only 18-22% of regional small enterprises have adopted AI tools — early movers gain structural advantage (KnowER task-0003, confidence 3)",
+                "Adoption is growing ~5 percentage points per year — accelerating but not saturated (KnowER task-0003, confidence 2)",
+                "Many businesses still relying on manual processes, creating clear efficiency gains from modest automation (KnowER task-0003, inference)",
+                "Independent forecasts project 25-30% adoption in 2 years, not 50% — honest framing builds trust (KnowER task-0003, confidence 2)"
+              ],
+              "drafts": [
+                {
+                  "channel": "email",
+                  "subject": "Why the first 20% of regional businesses adopting AI tools will have a lasting edge",
+                  "body": "Hi [First Name],\n\nA recent cross-referenced analysis of regional small enterprise data shows that about 1 in 5 businesses locally have started adopting AI-powered tools — and that number is growing steadily (roughly 5 more percentage points each year).\n\nWhat's worth noting: most of your peers are still weighing when to start. The data suggests early adopters are building a structural advantage — not because adoption is everywhere (it isn't), but because the businesses that start now are the ones shaping how these tools get used in your sector.\n\nWould it be useful to see a brief benchmark for your specific type of business? No follow-up expected.\n\nBest,\n[Sender]",
+                  "tone": "consultative",
+                  "evidence_citations": [
+                    "KnowER task-0003: verified adoption rate 18-22% (confidence 3)",
+                    "KnowER task-0003: year-over-year growth ~5pp (confidence 2)",
+                    "KnowER task-0003: independent forecast 25-30% in 2 years (confidence 2)",
+                    "KnowER task-0003: 50% claim DEBUNKED — not cited"
+                  ]
+                }
+              ],
+              "objection_handling": [
+                {
+                  "anticipated_objection": "AI isn't relevant to my business",
+                  "response_draft": "Fair point — and most businesses in your region haven't adopted yet either (only about 1 in 5). The real question isn't about 'AI' as a buzzword; it's whether the specific workflows slowing you down could benefit from modest automation. Happy to share what peers in your sector are finding useful — no commitment.",
+                  "confidence": 72
+                },
+                {
+                  "anticipated_objection": "I've heard most businesses are already using these tools",
+                  "response_draft": "That's a common impression, and it's worth being direct: the data actually shows around 18-22% adoption, not 'most.' The 50% figure floating around comes from a vendor-sponsored estimate. The real adoption rate is lower than the hype — but it IS growing, which is why timing matters.",
+                  "confidence": 80
+                }
+              ],
+              "yield_score": 72,
+              "fit_score": 75
+            }
+          ]
+        },
+        "approval_required": true,
+        "next_steps_recommendation": "Present to operator for review and approval. Key note: this draft intentionally avoids the debunked 50% claim and uses verified figures only.",
+        "audit_trail": {
+          "upstream_sources": ["task-0003 (KnowER research)"],
+          "draft_methods": ["evidence-backed personalization", "myth avoidance", "objection anticipation with honest framing"],
+          "review_count": 1
+        }
+      }
+    },
+    {
+      "step": 9,
+      "phase": "downstream_validation_result",
+      "result": {
+        "valid": true,
+        "packet_type": "pyper_approval",
+        "source": "pyper",
+        "task_id": "task-0004",
+        "timestamp": "2026-05-10T16:15:01Z",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "step": 10,
+      "phase": "downstream_routing_decision",
+      "decision": {
+        "routing_target": "operator",
+        "reason": "PypER approval packet requires operator review and explicit approval. Research-backed draft is ready for human review.",
+        "creates_downstream_task": false
+      }
+    },
+    {
+      "step": 11,
+      "phase": "operator_facing_packet",
+      "packet": {
+        "operator_packet_type": "task_summary",
+        "task_id": "task-0004",
+        "upstream_task_id": "task-0003",
+        "state": "approval_pending",
+        "subagent": "pyper",
+        "packet_type": "pyper_approval",
+        "summary": "Evidence-backed outreach draft for Region X small enterprises. Uses verified 18-22% adoption rate and ~5pp growth trend. Explicitly avoids the debunked 50% myth. Honest framing positions the opportunity as early-mover advantage without hype.",
+        "key_findings": [
+          "Verified adoption rate: 18-22% (confidence 3)",
+          "Year-over-year growth: ~5 percentage points (confidence 2)",
+          "Independent 2-year projection: 25-30% (confidence 2)",
+          "Vendor claim of 50% adoption: DEBUNKED (confidence 3)"
+        ],
+        "risk_flags": [
+          "Cold outreach — no prior relationship",
+          "Objection handling confidence: 72-80",
+          "Myth debunking in objection response is assertive — review tone"
+        ],
+        "approval_required": true,
+        "next_steps": [
+          "Review and approve/reject the outreach draft",
+          "Approve myth-busting objection response or request softer framing",
+          "If approved, schedule outbound at operator's discretion"
+        ],
+        "routing_suggestion": "Await operator approval. No automated outbound.",
+        "timestamp": "2026-05-10T16:15:05Z"
+      }
+    }
+  ],
+  "state_log": [
+    {"task_id": "task-0003", "state": "created", "timestamp": "2026-05-10T15:00:00Z", "note": "Operator requested research on Region X adoption claims"},
+    {"task_id": "task-0003", "state": "assigned", "timestamp": "2026-05-10T15:00:05Z", "note": "Assigned to KnowER"},
+    {"task_id": "task-0003", "state": "in_progress", "timestamp": "2026-05-10T15:00:10Z", "note": "KnowER began research"},
+    {"task_id": "task-0003", "state": "response_received", "timestamp": "2026-05-10T15:45:00Z", "note": "knower_research packet received"},
+    {"task_id": "task-0003", "state": "validation_passed", "timestamp": "2026-05-10T15:45:01Z", "note": "Packet validated successfully"},
+    {"task_id": "task-0003", "state": "routed", "timestamp": "2026-05-10T15:50:00Z", "note": "Routed to PypER for outreach (new task-0004)"},
+    {"task_id": "task-0003", "state": "completed", "timestamp": "2026-05-10T15:50:05Z", "note": "Task completed; output fed to task-0004"},
+    {"task_id": "task-0004", "state": "created", "timestamp": "2026-05-10T15:50:00Z", "note": "Created from task-0003 output"},
+    {"task_id": "task-0004", "state": "assigned", "timestamp": "2026-05-10T15:50:05Z", "note": "Assigned to PypER"},
+    {"task_id": "task-0004", "state": "in_progress", "timestamp": "2026-05-10T15:50:10Z", "note": "PypER began draft"},
+    {"task_id": "task-0004", "state": "response_received", "timestamp": "2026-05-10T16:15:00Z", "note": "pyper_approval packet received"},
+    {"task_id": "task-0004", "state": "validation_passed", "timestamp": "2026-05-10T16:15:01Z", "note": "Packet validated successfully"},
+    {"task_id": "task-0004", "state": "routed", "timestamp": "2026-05-10T16:15:05Z", "note": "Routed to operator for approval"},
+    {"task_id": "task-0004", "state": "approval_pending", "timestamp": "2026-05-10T16:15:10Z", "note": "Awaiting operator approval"}
+  ]
+}

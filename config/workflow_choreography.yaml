@@ -1,0 +1,193 @@
+# OverCR v0.8.0 — Workflow Choreography Configuration
+#
+# Defines supported workflows, handoff paths, approval defaults,
+# and per-workflow node/edge specifications.
+#
+# This config is read by the workflow runner at execution time.
+# All workflows are explicit DAGs — every node and edge is declared.
+
+version: "0.8.0"
+
+# ── Global defaults ─────────────────────────────────────
+
+defaults:
+  approval_policy: "always"
+  max_retries: 1
+  timeout_s: 60.0
+  allow_deterministic_fallback: true
+  stop_on_validation_failure: true
+  stop_on_policy_violation: true
+  stop_on_approval_required_without_approval: true
+  stop_on_max_retries: true
+
+# ── Valid handoff paths (source -> target) ──────────────
+# All cross-subagent handoffs MUST go through OverCR.
+# Direct subagent-to-subagent routing is forbidden.
+
+handoff_paths:
+  knower_to_cryer:
+    source: knower
+    target: cryer
+    description: "KnowER classification context -> CryER recon"
+    accepted_packet_types:
+      - knower_claim_review
+      - knower_assessment
+      - knower_myth_fact
+    transformation_rule: "extract_public_signal_context"
+
+  cryer_to_pyper:
+    source: cryer
+    target: pyper
+    description: "CryER signal data -> PypER execution planning"
+    accepted_packet_types:
+      - cryer_recon
+      - cryer_engagement_signal
+      - cryer_reputation_signal
+    transformation_rule: "extract_signal_for_planning"
+    approval_gate: "always"
+
+  coder_to_pyper:
+    source: coder
+    target: pyper
+    description: "CodER patch advisory -> PypER execution simulation"
+    accepted_packet_types:
+      - coder_patch_plan
+      - coder_completion
+    transformation_rule: "extract_patch_for_simulation"
+    approval_gate: "always"
+
+  knower_to_pyper:
+    source: knower
+    target: pyper
+    description: "KnowER research -> PypER outreach planning"
+    accepted_packet_types:
+      - knower_research
+    transformation_rule: "extract_signal_for_planning"
+
+  knower_to_coder:
+    source: knower
+    target: coder
+    description: "KnowER research -> CodER implementation"
+    accepted_packet_types:
+      - knower_research
+      - knower_assessment
+
+  coder_to_knower:
+    source: coder
+    target: knower
+    description: "CodER blocked -> KnowER for research"
+    accepted_packet_types:
+      - coder_blocked
+
+  cryer_to_knower:
+    source: cryer
+    target: knower
+    description: "CryER recon -> KnowER for deep analysis"
+    accepted_packet_types:
+      - cryer_recon
+      - cryer_alert
+
+# ── Workflow definitions ───────────────────────────────
+
+workflows:
+  knower_to_cryer:
+    description: "KnowER classifies claims, CryER produces recon from public signals"
+    version: "0.8.0"
+    nodes:
+      knower_classify:
+        subagent: knower
+        packet_type: knower_claim_review
+        input_requirements:
+          - raw_claims
+        output_requirements:
+          - classified_claims
+        approval_policy: "on_failure"
+        max_retries: 1
+        timeout_s: 60
+      cryer_recon:
+        subagent: cryer
+        packet_type: cryer_recon
+        input_requirements:
+          - classified_claims
+        output_requirements:
+          - recon_packet
+        approval_policy: "always"
+        max_retries: 1
+        timeout_s: 60
+    edges:
+      knower_to_cryer:
+        source: knower_classify
+        target: cryer_recon
+        accepted_packet_types:
+          - knower_claim_review
+          - knower_assessment
+        transformation_rule: "extract_public_signal_context"
+        approval_gate: "never"
+
+  cryer_to_pyper:
+    description: "CryER signals -> PypER planning (approval_required, no outbound)"
+    version: "0.8.0"
+    nodes:
+      cryer_signal:
+        subagent: cryer
+        packet_type: cryer_engagement_signal
+        input_requirements:
+          - entity_context
+        output_requirements:
+          - signal_packet
+        approval_policy: "on_failure"
+        max_retries: 1
+        timeout_s: 60
+      pyper_plan:
+        subagent: pyper
+        packet_type: pyper_execution_plan
+        input_requirements:
+          - signal_packet
+        output_requirements:
+          - execution_plan
+        approval_policy: "always"
+        max_retries: 0
+        timeout_s: 60
+    edges:
+      cryer_to_pyper:
+        source: cryer_signal
+        target: pyper_plan
+        accepted_packet_types:
+          - cryer_engagement_signal
+          - cryer_reputation_signal
+          - cryer_recon
+        transformation_rule: "extract_signal_for_planning"
+        approval_gate: "always"
+
+  coder_to_pyper:
+    description: "CodER patch advisory -> PypER execution simulation (no execution, no mutation)"
+    version: "0.8.0"
+    nodes:
+      coder_patch:
+        subagent: coder
+        packet_type: coder_patch_plan
+        input_requirements:
+          - issue_context
+        output_requirements:
+          - patch_plan
+        approval_policy: "always"
+        max_retries: 1
+        timeout_s: 60
+      pyper_simulate:
+        subagent: pyper
+        packet_type: pyper_execution_receipt
+        input_requirements:
+          - patch_plan
+        output_requirements:
+          - simulated_receipt
+        approval_policy: "always"
+        max_retries: 0
+        timeout_s: 60
+    edges:
+      coder_to_pyper:
+        source: coder_patch
+        target: pyper_simulate
+        accepted_packet_types:
+          - coder_patch_plan
+        transformation_rule: "extract_patch_for_simulation"
+        approval_gate: "always"

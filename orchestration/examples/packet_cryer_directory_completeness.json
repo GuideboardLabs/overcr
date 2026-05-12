@@ -1,0 +1,29 @@
+{
+  "packet_type": "cryer_directory_completeness",
+  "version": "1.0",
+  "timestamp": "2026-05-10T18:33:00Z",
+  "source": "cryer",
+  "target": "overcr",
+  "task_id": "task-0023",
+  "summary": "CryER directory completeness assessment for: Delta Dental",
+  "directory_completeness_data": {
+    "entity": "Delta Dental",
+    "present_fields": ["name", "address", "phone", "website"],
+    "missing_fields": ["hours", "description", "photos", "insurance_accepted"],
+    "completeness_score": 50,
+    "classification": "observed",
+    "confidence": 80,
+    "recommended_routing": "overcr",
+    "source_quality": "primary",
+    "unknowns": ["Some fields may exist but were not provided in input"]
+  },
+  "audit_trail": {
+    "worker_version": "0.4.0",
+    "execution_timestamp": "2026-05-10T18:33:01Z",
+    "methods_used": ["public_signal_analysis"],
+    "files_modified": [],
+    "rollback_instructions": "No filesystem changes made by worker. Analysis only."
+  },
+  "approval_required": false,
+  "next_steps_recommendation": "No external action needed. Route to OverCR for downstream handling."
+}

@@ -1,0 +1,294 @@
+{
+  "flow_description": "CryER recon → PypER outreach: a two-task multi-hop flow. OverCR creates task-0001 for CryER recon, then after validation and routing, creates task-0002 for PypER outreach using the recon output as input context.",
+  "flow_steps": [
+    {
+      "step": 1,
+      "phase": "task_creation",
+      "note": "Operator requests public signal reconnaissance on a business with no clear website but active Facebook presence and reviews."
+    },
+    {
+      "step": 2,
+      "phase": "request_packet",
+      "packet": {
+        "task_id": "task-0001",
+        "assigned_subagent": "cryer",
+        "domain": "recon",
+        "instruction": "Conduct public signal reconnaissance on Riverside Physical Therapy. This business has no clear website but appears active on Facebook and review sites. Focus on reputation signals, engagement patterns, hiring hints, booking friction indicators, and admin pain signals.",
+        "input_context": {
+          "entity": "Riverside Physical Therapy",
+          "type": "business",
+          "focus_areas": ["reviews", "engagement", "hiring", "directory", "reputation"],
+          "upstream_task_id": null
+        },
+        "constraints": [
+          "Public signals only. No private data.",
+          "No outbound contact.",
+          "No automated scraping beyond publicly accessible sources."
+        ],
+        "required_packet_type": "cryer_recon",
+        "created_at": "2026-05-10T14:00:00Z"
+      }
+    },
+    {
+      "step": 3,
+      "phase": "task_state_transitions",
+      "transitions": [
+        {"state": "created", "timestamp": "2026-05-10T14:00:00Z", "note": "Task created by OverCR operator request"},
+        {"state": "assigned", "timestamp": "2026-05-10T14:00:05Z", "note": "Assigned to CryER"},
+        {"state": "in_progress", "timestamp": "2026-05-10T14:00:10Z", "note": "CryER acknowledged and began recon"}
+      ]
+    },
+    {
+      "step": 4,
+      "phase": "response_packet",
+      "packet": {
+        "packet_type": "cryer_recon",
+        "version": "1.0",
+        "timestamp": "2026-05-10T14:25:00Z",
+        "source": "cryer",
+        "target": "overcr",
+        "task_id": "task-0001",
+        "summary": "Recon on Riverside Physical Therapy: moderate yield (68/100). Strong Facebook engagement but slow review response time, partial directory presence, and multiple hiring signals suggest growth friction.",
+        "recon_data": {
+          "targets": [
+            {
+              "entity": "Riverside Physical Therapy",
+              "type": "business",
+              "signals": {
+                "reviews": {
+                  "count": 87,
+                  "sentiment": "positive",
+                  "recency": "2026-04-28",
+                  "sources": ["Google Business Profile", "Healthgrades", "Facebook Reviews"]
+                },
+                "engagement": {
+                  "social_presence": true,
+                  "response_rate": "~45%",
+                  "active_signals": ["Regular Facebook posts (3-4/week)", "Facebook Messenger responses", "Seasonal promotion content"]
+                },
+                "hiring": {
+                  "active": true,
+                  "roles": ["Licensed Physical Therapist", "Front Desk Coordinator"],
+                  "growth_signal": "growing"
+                },
+                "directory": {
+                  "listed": true,
+                  "directories": ["Google Business Profile", "Yelp", "Healthgrades"],
+                  "completeness": "partial"
+                },
+                "reputation": {
+                  "yield_score": 68,
+                  "confidence": 75,
+                  "risk_flags": ["Slow review response time (avg 3-5 days)", "No dedicated website", "Facebook-only scheduling creates friction"]
+                }
+              },
+              "raw_sources": [
+                "https://www.google.com/maps/place/Riverside+Physical+Therapy",
+                "https://www.healthgrades.com/riverside-pt",
+                "https://www.yelp.com/biz/riverside-physical-therapy",
+                "https://www.facebook.com/riversidept"
+              ]
+            }
+          ]
+        },
+        "next_steps_recommendation": "Route to PypER for outreach drafting — moderate yield score with clear pain signals (no website, slow review response, hiring friction). Personalization signals include: growing team needing onboarding automation, Facebook-dependent booking creating friction, and positive reputation that could be amplified with better digital tools.",
+        "audit_trail": {
+          "collection_timestamps": [
+            "2026-05-10T14:05:00Z",
+            "2026-05-10T14:15:00Z",
+            "2026-05-10T14:20:00Z"
+          ],
+          "methods_used": ["public_directory_crawl", "review_aggregation", "social_media_scan", "job_board_scan"]
+        }
+      }
+    },
+    {
+      "step": 5,
+      "phase": "validation_result",
+      "result": {
+        "valid": true,
+        "packet_type": "cryer_recon",
+        "source": "cryer",
+        "task_id": "task-0001",
+        "timestamp": "2026-05-10T14:25:01Z",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "step": 6,
+      "phase": "routing_decision",
+      "decision": {
+        "routing_target": "pyper",
+        "reason": "CryER recon identifies clear outreach opportunity. Yield score 68 with actionable pain signals.",
+        "creates_downstream_task": true
+      }
+    },
+    {
+      "step": 7,
+      "phase": "downstream_request_packet",
+      "packet": {
+        "task_id": "task-0002",
+        "assigned_subagent": "pyper",
+        "domain": "outreach",
+        "instruction": "Draft personalized outreach for Riverside Physical Therapy based on CryER recon from task-0001. The business has no website but strong Facebook presence, slow review responses, and is hiring — suggesting growth friction that local AI solutions could address.",
+        "input_context": {
+          "entity": "Riverside Physical Therapy",
+          "type": "business",
+          "focus_areas": ["outreach_drafting", "personalization", "objection_handling"],
+          "upstream_task_id": "task-0001",
+          "recon_summary": {
+            "yield_score": 68,
+            "confidence": 75,
+            "key_signals": [
+              "87 positive reviews but slow response time (~45% response rate)",
+              "Active on Facebook but no dedicated website",
+              "Hiring PT and front desk — growth friction",
+              "Partial directory presence",
+              "Facebook-dependent booking creates friction"
+            ]
+          }
+        },
+        "constraints": [
+          "All drafts require operator approval before any outbound action.",
+          "No claims without evidence citations from recon data.",
+          "Tone: consultative, not aggressive."
+        ],
+        "required_packet_type": "pyper_approval",
+        "created_at": "2026-05-10T14:30:00Z"
+      }
+    },
+    {
+      "step": 8,
+      "phase": "downstream_response_packet",
+      "packet": {
+        "packet_type": "pyper_approval",
+        "version": "1.0",
+        "timestamp": "2026-05-10T14:50:00Z",
+        "source": "pyper",
+        "target": "overcr",
+        "task_id": "task-0002",
+        "upstream_task_id": "task-0001",
+        "summary": "Outreach draft for Riverside Physical Therapy — personalized using recon signals showing growth friction and digital gaps.",
+        "draft_data": {
+          "prospects": [
+            {
+              "entity": "Riverside Physical Therapy",
+              "approach_type": "cold_email",
+              "personalization_signals": [
+                "Growing team — hiring Licensed PT and Front Desk Coordinator (CryER task-0001)",
+                "87 positive reviews but ~45% response rate suggesting capacity strain (CryER task-0001)",
+                "No dedicated website — Facebook-dependent scheduling creates booking friction (CryER task-0001)",
+                "Partial directory presence — opportunity to help consolidate online identity (CryER task-0001)"
+              ],
+              "drafts": [
+                {
+                  "channel": "email",
+                  "subject": "Helping Riverside PT handle growth without the friction",
+                  "body": "Hi [First Name],\n\nI noticed Riverside PT is growing — congrats on the recent hires. With your team expanding, I wanted to reach out about something I've seen help similar practices: consolidating your online presence so patients find you easily and booking doesn't depend on Facebook Messenger alone.\n\nYour reviews are strong (4.6 average across 87 reviews), but I noticed response times could be faster — that's actually an area where practices like yours have seen real improvement by streamlining their digital workflow.\n\nWould it make sense to chat briefly this week?\n\nBest,\n[Sender]",
+                  "tone": "consultative",
+                  "evidence_citations": [
+                    "CryER task-0001: hiring signals — Licensed PT, Front Desk Coordinator",
+                    "CryER task-0001: review sentiment positive, response rate ~45%",
+                    "CryER task-0001: no website, Facebook-dependent booking",
+                    "CryER task-0001: partial directory presence across 3 platforms"
+                  ]
+                }
+              ],
+              "objection_handling": [
+                {
+                  "anticipated_objection": "We're doing fine without a website",
+                  "response_draft": "That's fair — your reviews show you're clearly doing something right. The issue isn't about having a website for its own sake; it's about reducing the friction of managing Facebook messages, directory listings, and review responses across multiple platforms. Practices that consolidate report saving 5-8 hours per week on admin.\n",
+                  "confidence": 70
+                },
+                {
+                  "anticipated_objection": "Not interested right now",
+                  "response_draft": "Totally understandable — timing is everything. Would it be helpful if I shared a brief benchmark on how similar practices in your area handle online booking and review response? No follow-up expected.",
+                  "confidence": 65
+                }
+              ],
+              "yield_score": 68,
+              "fit_score": 78
+            }
+          ]
+        },
+        "approval_required": true,
+        "next_steps_recommendation": "Present to operator for review and approval before any outbound action.",
+        "audit_trail": {
+          "upstream_sources": ["task-0001 (CryER recon)"],
+          "draft_methods": ["evidence-backed personalization", "objection anticipation"],
+          "review_count": 1
+        }
+      }
+    },
+    {
+      "step": 9,
+      "phase": "downstream_validation_result",
+      "result": {
+        "valid": true,
+        "packet_type": "pyper_approval",
+        "source": "pyper",
+        "task_id": "task-0002",
+        "timestamp": "2026-05-10T14:50:01Z",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "step": 10,
+      "phase": "downstream_routing_decision",
+      "decision": {
+        "routing_target": "operator",
+        "reason": "PypER approval packet requires operator review and explicit approval before any outbound action.",
+        "creates_downstream_task": false
+      }
+    },
+    {
+      "step": 11,
+      "phase": "operator_facing_packet",
+      "packet": {
+        "operator_packet_type": "task_summary",
+        "task_id": "task-0002",
+        "upstream_task_id": "task-0001",
+        "state": "approval_pending",
+        "subagent": "pyper",
+        "packet_type": "pyper_approval",
+        "summary": "Outreach draft for Riverside Physical Therapy — personalized consultative email addressing growth friction, slow review responses, and lack of web presence.",
+        "key_findings": [
+          "87 positive reviews (4.6 avg) but ~45% response rate suggests capacity strain",
+          "No dedicated website — Facebook-dependent scheduling creates booking friction",
+          "Hiring Licensed PT and Front Desk Coordinator — growth signal",
+          "Partial directory presence across 3 platforms"
+        ],
+        "risk_flags": [
+          "Cold outreach — no prior relationship established",
+          "Objection handling confidence: 65-70 (moderate)"
+        ],
+        "approval_required": true,
+        "next_steps": [
+          "Review and approve/reject the outreach draft",
+          "If approved, schedule outbound action at operator's discretion",
+          "If rejected, request revision with specific feedback"
+        ],
+        "routing_suggestion": "Await operator approval. No further automated action.",
+        "timestamp": "2026-05-10T14:50:05Z"
+      }
+    }
+  ],
+  "state_log": [
+    {"task_id": "task-0001", "state": "created", "timestamp": "2026-05-10T14:00:00Z", "note": "Operator requested recon on Riverside PT"},
+    {"task_id": "task-0001", "state": "assigned", "timestamp": "2026-05-10T14:00:05Z", "note": "Assigned to CryER"},
+    {"task_id": "task-0001", "state": "in_progress", "timestamp": "2026-05-10T14:00:10Z", "note": "CryER began recon"},
+    {"task_id": "task-0001", "state": "response_received", "timestamp": "2026-05-10T14:25:00Z", "note": "cryer_recon packet received"},
+    {"task_id": "task-0001", "state": "validation_passed", "timestamp": "2026-05-10T14:25:01Z", "note": "Packet validated successfully"},
+    {"task_id": "task-0001", "state": "routed", "timestamp": "2026-05-10T14:30:00Z", "note": "Routed to PypER for outreach (new task-0002)"},
+    {"task_id": "task-0001", "state": "completed", "timestamp": "2026-05-10T14:30:05Z", "note": "Task completed; output fed to task-0002"},
+    {"task_id": "task-0002", "state": "created", "timestamp": "2026-05-10T14:30:00Z", "note": "Created from task-0001 output"},
+    {"task_id": "task-0002", "state": "assigned", "timestamp": "2026-05-10T14:30:05Z", "note": "Assigned to PypER"},
+    {"task_id": "task-0002", "state": "in_progress", "timestamp": "2026-05-10T14:30:10Z", "note": "PypER began draft"},
+    {"task_id": "task-0002", "state": "response_received", "timestamp": "2026-05-10T14:50:00Z", "note": "pyper_approval packet received"},
+    {"task_id": "task-0002", "state": "validation_passed", "timestamp": "2026-05-10T14:50:01Z", "note": "Packet validated successfully"},
+    {"task_id": "task-0002", "state": "routed", "timestamp": "2026-05-10T14:50:05Z", "note": "Routed to operator for approval"},
+    {"task_id": "task-0002", "state": "approval_pending", "timestamp": "2026-05-10T14:50:10Z", "note": "Awaiting operator approval"}
+  ]
+}

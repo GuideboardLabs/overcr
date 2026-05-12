@@ -1,0 +1,51 @@
+# OverCR — Git Ignore
+# Runtime state, logs, and machine-specific artifacts must not enter the repo.
+
+# ── Python ──
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ── OverCR runtime state (generated at boot, not source) ──
+overcr_state.json
+HQ_BOOT_MANIFEST.md
+HQ_ROUTE_MARKER
+HQ_BOOT_VERIFICATION.txt
+prompts/hq_boot_context_bundle.txt
+prompts/hq_raw_boot_context.txt
+sessions/
+logs/
+
+# ── Task state (generated at runtime) ──
+orchestration/tasks/task-*.json
+
+# ── Audit log (generated at runtime, append-only) ──
+runtime/audit.jsonl
+
+# ── Workflow traces (generated at runtime by workflow_runner) ──
+runtime/workflow_trace_*.jsonl
+
+# ── Config templates (filled copies, not source) ──
+configs/cag-memory-config.json
+configs/session-ingestion-config.json
+configs/release-preservation-config.txt
+
+# ── IDE / editor ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── Packaging artifacts ──
+*.tar.gz
+*.zip
+dist/

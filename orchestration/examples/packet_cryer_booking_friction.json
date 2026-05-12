@@ -1,0 +1,41 @@
+{
+  "packet_type": "cryer_booking_friction",
+  "version": "1.0",
+  "timestamp": "2026-05-10T18:32:00Z",
+  "source": "cryer",
+  "target": "overcr",
+  "task_id": "task-0022",
+  "summary": "CryER booking friction analysis for: Gamma Services",
+  "booking_friction_data": {
+    "entity": "Gamma Services",
+    "friction_points": [
+      {
+        "type": "no_online_booking",
+        "classification": "observed",
+        "confidence": 92,
+        "detail": "No online booking system found on website — phone call required",
+        "source_quality": "primary",
+        "unknowns": []
+      },
+      {
+        "type": "limited_hours",
+        "classification": "observed",
+        "confidence": 85,
+        "detail": "Available hours listed as 10am-3pm Mon-Fri only",
+        "source_quality": "primary",
+        "unknowns": []
+      }
+    ],
+    "friction_summary": "Gamma Services has 2 booking friction points: no online booking and limited hours of availability. These may reduce conversion rates for outreach follow-up.",
+    "recommended_routing": "overcr"
+  },
+  "audit_trail": {
+    "worker_version": "0.4.0",
+    "execution_timestamp": "2026-05-10T18:32:01Z",
+    "methods_used": ["public_signal_analysis"],
+    "files_modified": [],
+    "rollback_instructions": "No filesystem changes made by worker. Analysis only."
+  },
+  "approval_required": false,
+  "next_steps_recommendation": "No external action needed. Route to OverCR for downstream handling."
+}

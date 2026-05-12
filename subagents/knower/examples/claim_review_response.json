@@ -1,0 +1,80 @@
+{
+  "packet_type": "knower_claim_review",
+  "version": "1.0",
+  "timestamp": "2026-05-10T16:00:00Z",
+  "source": "knower",
+  "target": "overcr",
+  "task_id": "task-0001",
+  "summary": "KnowER claim review: classified 4 claims about regional infrastructure investment into fact/inference/assumption/rumor with confidence ratings and source quality assessments",
+  "claim_review_data": {
+    "topic": "Regional infrastructure investment claims",
+    "claims": [
+      {
+        "text": "The county has allocated $12M for downtown renovation in 2026",
+        "classification": "fact",
+        "confidence": 4,
+        "source_quality": "primary",
+        "evidence": [
+          {
+            "reference": "Provided budget document excerpt, Section 3.1",
+            "reliability": "high",
+            "supports": true
+          }
+        ],
+        "unknowns": []
+      },
+      {
+        "text": "The renovation will increase commercial occupancy by 30%",
+        "classification": "inference",
+        "confidence": 2,
+        "source_quality": "secondary",
+        "evidence": [
+          {
+            "reference": "Provided regional development report, page 14",
+            "reliability": "medium",
+            "supports": true
+          }
+        ],
+        "unknowns": [
+          "Baseline occupancy rate not provided in input",
+          "Projection methodology unknown"
+        ]
+      },
+      {
+        "text": "Local businesses are opposed to the construction timeline",
+        "classification": "assumption",
+        "confidence": 1,
+        "source_quality": "tertiary",
+        "evidence": [],
+        "unknowns": [
+          "No direct business sentiment data in provided input",
+          "No survey results or interviews available"
+        ]
+      },
+      {
+        "text": "A competing developer is planning a similar project in the adjacent county",
+        "classification": "rumor",
+        "confidence": 1,
+        "source_quality": "unverified",
+        "evidence": [],
+        "unknowns": [
+          "Source of claim unknown from provided input",
+          "No documentation available for verification",
+          "Competing developer identity unspecified"
+        ]
+      }
+    ],
+    "operator_brief": "Of 4 claims reviewed, 1 is confirmed fact (budget allocation), 1 is inference pending verification (occupancy projection), 1 is assumption without evidence (business opposition), and 1 is rumor with no supporting documentation (competing developer). The fact claim is high-confidence with primary source backing. The remaining claims require additional primary source verification before operational decisions."
+  },
+  "audit_trail": {
+    "worker_version": "0.3.0",
+    "execution_timestamp": "2026-05-10T16:00:00Z",
+    "sources_consulted": [
+      {"reference": "Provided budget document excerpt", "reliability": "high"},
+      {"reference": "Provided regional development report", "reliability": "medium"}
+    ],
+    "methodology_notes": "Analysis based on provided input text only. No external action taken."
+  },
+  "approval_required": false,
+  "next_steps_recommendation": "Route claim review to operator for judgment. No external action needed."
+}

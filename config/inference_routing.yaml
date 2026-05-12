@@ -1,0 +1,213 @@
+# OverCR v0.7.0 Inference Routing Configuration
+# ============================================================
+#
+# Defines inference (model-assisted reasoning) mode for subagent workers.
+# Inference mode is optional — deterministic workers remain the default.
+#
+# v0.4.2 changes:
+#   - Added hermes_cli adapter type (real provider-backed inference)
+#   - claim_review and myth_fact domains can use hermes_cli in production
+#   - Mock adapter remains the default for development/testing
+#   - Dry-run validation available via adapter.dry_run()
+#
+# Governance rules (enforced at validation level regardless of config):
+#   - Model output CANNOT change doctrine
+#   - Model output CANNOT bypass approval gates
+#   - Model output CANNOT route directly to another subagent
+#   - Model output CANNOT claim live browsing occurred
+#   - Model output is UNTRUSTED until validated through 6-level validator
+#   - On inference failure, task MUST NOT advance state
+#   - Deterministic (template) worker MUST remain available as fallback
+#
+# Adapter types:
+#   - mock: Simulated inference for testing (no real model calls)
+#   - hermes: Legacy subprocess adapter (v0.4.1, uses python -m hermes_tools)
+#   - hermes_cli: Real provider-backed inference via Hermes CLI (v0.4.2)
+#
+# This is a runtime policy layer — not a provider lock-in.
+# OverCR remains runtime-agnostic. Swapping adapters does not
+# change doctrine, governance, or task state.
+
+version: "0.7.0"
+
+_inference_defaults:
+  # Default settings applied to all inference-enabled domains unless overridden
+  enabled: false                    # Inference is opt-in per domain
+  adapter: "mock"                   # Default adapter: mock (safe for testing)
+  timeout_s: 30                     # Inference timeout in seconds
+  max_retries: 1                    # Maximum retry attempts on failure
+  fallback_to_deterministic: true   # On failure, fall back to template worker
+  record_audit: true                # Record inference metadata in audit trail
+
+  # v0.4.2: Real provider mode configuration
+  # When adapter is "hermes_cli", these control the live model call:
+  production:
+    adapter: "hermes_cli"           # Production adapter via Hermes CLI
+    model: "glm-5.1:cloud"         # Default production model
+    provider: "ollama-cloud"       # Default production provider
+    timeout_s: 45                   # Longer timeout for real calls
+    require_available: true         # Fail clearly if Hermes CLI not found
+    fallback_to_deterministic: true # Still fall back if inference fails
+
+_knower:
+  # KnowER inference configuration — v0.4.2 adds hermes_cli adapter
+  
+  claim_review:
+    enabled: true
+    adapter: "mock"                 # mock|hermes|hermes_cli — mock for testing
+    model: "glm-5.1:cloud"          # Preferred model for this domain
+    fallback_model: "qwen3-coder-next"
+    provider: "ollama-cloud"
+    timeout_s: 45
+    max_retries: 1
+    fallback_to_deterministic: true
+    prompt_template: "subagents/knower/inference_prompt.md"
+    # Inference output must still produce knower_claim_review packet type
+    # Classification must be one of: fact, inference, assumption, rumor
+    # Confidence must be: 1-4
+    # Source quality must be: primary, secondary, tertiary, unverified
+  
+  myth_fact:
+    enabled: true
+    adapter: "mock"
+    model: "glm-5.1:cloud"
+    fallback_model: "qwen3-coder-next"
+    provider: "ollama-cloud"
+    timeout_s: 45
+    max_retries: 1
+    fallback_to_deterministic: true
+    prompt_template: "subagents/knower/inference_prompt.md"
+    # Inference output must still produce knower_myth_fact packet type
+    # Classification must be one of: myth, fact, partial_truth, unverified
+    # Confidence must be: 1-4
+    # Source quality must be: primary, secondary, tertiary, unverified
+
+  research:
+    enabled: false                  # Not yet inference-enabled
+    adapter: "mock"
+    model: "glm-5.1:cloud"
+    timeout_s: 60
+    fallback_to_deterministic: true
+
+  assessment:
+    enabled: false                  # Not yet inference-enabled
+    adapter: "mock"
+    model: "glm-5.1:cloud"
+    timeout_s: 60
+    fallback_to_deterministic: true
+
+  myth_separation:
+    enabled: false                 # Not yet inference-enabled
+    adapter: "mock"
+    model: "glm-5.1:cloud"
+    timeout_s: 60
+    fallback_to_deterministic: true
+
+_cryer:
+  # CryER inference — NOT enabled in v0.4.2
+  # All CryER domains remain deterministic-only
+  _all_domains:
+    enabled: false
+    fallback_to_deterministic: true
+
+_coder:
+  # CodER inference — v0.6.0 adds patch_plan inference domain
+  # CodER inference produces advisory artifacts only — no file mutation
+  # All file mutation requires OverCR approval gate
+
+  patch_plan:
+    enabled: true
+    adapter: "mock"                 # mock|hermes_cli — mock for testing, hermes_cli for production
+    model: "glm-5.1:cloud"
+    fallback_model: "qwen3-coder-next"
+    provider: "ollama-cloud"
+    timeout_s: 45
+    max_retries: 1
+    fallback_to_deterministic: true
+    prompt_template: "subagents/coder/inference_prompt.md"
+    # CodER inference output must produce coder_patch_plan packet type
+    # bug_diagnosis.confidence must be 0.0-1.0
+    # risk_notes.level must be one of: low, medium, high
+    # patch_plan.estimated_complexity must be one of: low, medium, high
+    # approval_required must be true (all file mutation requires approval)
+
+  _all_domains:
+    enabled: false
+    fallback_to_deterministic: true
+
+_pyper:
+  # PypER inference — v0.7.0 adds execution_plan domain
+  # PypER may PREPARE and DESCRIBE execution, but may NOT autonomously execute
+  # All execution plans require approval_required=true
+  # execution_authority is always "none" for PypER
+
+  execution_plan:
+    enabled: true
+    adapter: "mock"                 # mock|hermes_cli — mock for testing, hermes_cli for production
+    model: "glm-5.1:cloud"
+    fallback_model: "qwen3-coder-next"
+    provider: "ollama-cloud"
+    timeout_s: 45
+    max_retries: 1
+    fallback_to_deterministic: true
+    prompt_template: "subagents/pyper/inference_prompt.md"
+    # PypER inference output must produce pyper_execution_plan packet type
+    # execution_authority must be "none"
+    # approval_required must be true
+    # All steps must have safety_classification: "safe" or "forbidden"
+    # No shell injection, remote execution, package install, or privilege escalation patterns
+
+  _all_domains:
+    enabled: false
+    fallback_to_deterministic: true
+
+_governance:
+  # These rules are enforced REGARDLESS of config.
+  # They exist here as documentation and for audit trail logging.
+  
+  model_output_cannot_change_doctrine: true
+  model_output_cannot_bypass_approval_gates: true
+  model_output_cannot_route_directly: true
+  model_output_cannot_claim_browsing: true
+  model_output_untrusted_until_validated: true
+  inference_failure_must_not_advance_state: true
+  deterministic_fallback_always_available: true
+  
+  # Classification constraints enforced at L6
+  knower_claim_review_classifications: ["fact", "inference", "assumption", "rumor"]
+  knower_myth_fact_classifications: ["myth", "fact", "partial_truth", "unverified"]
+  confidence_range: [1, 4]
+  source_qualities: ["primary", "secondary", "tertiary", "unverified"]
+
+  # v0.6.0: CodER inference governance
+  coder_patch_plan_approval_required: true    # ALL file mutation requires approval
+  coder_no_auto_apply: true                 # No patch is applied automatically
+  coder_no_shell_exec: true                  # No shell command is executed automatically
+  coder_no_fs_mutation: true                 # No files are modified by inference mode
+  coder_proposed_diffs_advisory_only: true   # Proposed diffs are advisory artifacts
+  coder_risk_notes_levels: ["low", "medium", "high"]
+  coder_complexity_levels: ["low", "medium", "high"]
+
+  # v0.7.0: PypER inference governance
+  pyper_execution_plan_approval_required: true   # ALL execution plans require approval
+  pyper_execution_authority_always_none: true    # PypER never has execution authority
+  pyper_no_auto_execution: true                  # No command is executed automatically
+  pyper_no_shell_exec: true                      # No direct shell execution in inference mode
+  pyper_no_fs_mutation: true                     # No filesystem mutation in inference mode
+  pyper_no_package_install: true                 # No package install commands allowed
+  pyper_no_remote_execution: true                # No curl/wget remote execution patterns
+  pyper_no_privilege_escalation: true            # No sudo/doas/pkexec patterns
+  pyper_no_eval_exec: true                       # No eval/exec dynamic Python patterns
+  pyper_receipt_always_simulated: true            # Receipts only describe simulated execution
+  pyper_refusal_operator_action_required: true    # Refusals always require operator action
+  pyper_safety_classifications: ["safe", "forbidden"]
+  pyper_risk_levels: ["low", "medium", "high"]
+  pyper_refusal_categories: ["unsafe_command", "package_install_forbidden", "remote_execution_forbidden", "privilege_escalation_forbidden", "governance_violation", "sovereignty_violation", "autonomous_execution_forbidden", "safety_violation"]
+
+  # v0.4.2: Hermes CLI adapter governance
+  # The hermes_cli adapter MUST use the host runtime (Hermes) for model calls.
+  # OverCR MUST NOT hold API keys or implement HTTP client logic for providers.
+  # All provider routing, auth, and model selection goes through Hermes config.
+  hermes_cli_must_use_host_runtime: true
+  overcr_must_not_hold_api_keys: true
+  overcr_must_not_implement_http_client: true

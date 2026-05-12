@@ -1,0 +1,10 @@
+{
+  "name": "hermes_cli_adapter",
+  "module": "tests.test_hermes_cli_adapter",
+  "callable": "main",
+  "category": "inference",
+  "description": "HermesCLIAdapter: availability check, dry_run, live inference (if hermes present)",
+  "accepts_workspace": false,
+  "returns_exit_code": true,
+  "signal": "exit_code"
+}

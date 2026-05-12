@@ -1,0 +1,267 @@
+{
+  "version": "1.0.0",
+  "description": "OverCR consolidated regression test suite — v1.0.0",
+  "tests": [
+    {
+      "name": "approval_boundary",
+      "module": "examples.test_approval_boundary",
+      "callable": "run_approval_boundary_test",
+      "category": "governance",
+      "description": "PypER approval boundary: 51 assertions, 15 phases",
+      "accepts_workspace": true,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "governance_bypass",
+      "module": "examples.test_failure_governance_approval_bypass",
+      "callable": "run_failure_governance_test",
+      "category": "governance",
+      "description": "PypER approval bypass: defense-in-depth across 3 enforcement layers",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "rejection_loop",
+      "module": "examples.test_rejection_loop",
+      "callable": "run_rejection_loop_test",
+      "category": "governance",
+      "description": "Rejection loop + abandonment: 3 revision cycles, 24 assertions",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "malformed_packet",
+      "module": "examples.test_malformed_packet",
+      "callable": "run_malformed_packet_test",
+      "category": "validation",
+      "description": "Malformed packet validation: L1 rejection + recovery paths",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "direct_subagent_routing",
+      "module": "examples.test_direct_subagent_routing",
+      "callable": null,
+      "category": "sovereignty",
+      "description": "Direct subagent routing sovereignty: L1+L5 rejection, state machine blocks",
+      "accepts_workspace": false,
+      "returns_exit_code": false,
+      "signal": "sys_exit"
+    },
+    {
+      "name": "doctrine_conflict",
+      "module": "examples.test_doctrine_conflict",
+      "callable": null,
+      "category": "governance",
+      "description": "Governance override L5 pattern: 15 phases, catches bypass claims",
+      "accepts_workspace": false,
+      "returns_exit_code": false,
+      "signal": "sys_exit"
+    },
+    {
+      "name": "cold_start_reconstruction",
+      "module": "examples.test_cold_start_reconstruction",
+      "callable": null,
+      "category": "recovery",
+      "description": "Cold-start reconstruction: 66 assertions, 5 phases, filesystem truth",
+      "accepts_workspace": true,
+      "returns_exit_code": false,
+      "signal": "sys_exit"
+    },
+    {
+      "name": "audit_integrity",
+      "module": "examples.test_audit_integrity",
+      "callable": null,
+      "category": "audit",
+      "description": "Audit integrity: 17 assertions, tamper detection, cross-reference verification",
+      "accepts_workspace": true,
+      "returns_exit_code": false,
+      "signal": "sys_exit"
+    },
+    {
+      "name": "live_coder_worker",
+      "module": "examples.test_live_coder_worker",
+      "callable": "main",
+      "category": "worker",
+      "description": "Live CodER worker: happy path, malformed, timeout, governance, exit code, audit",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "live_knower_worker",
+      "module": "examples.test_v021",
+      "callable": "main",
+      "category": "worker",
+      "description": "v0.2.1 worker framework: KnowER, healthcheck, replay, registry, caps",
+      "accepts_workspace": false,
+      "returns_exit_code": false,
+      "signal": "global_flag"
+    },
+    {
+      "name": "model_router",
+      "module": "examples.test_model_router",
+      "callable": "main",
+      "category": "routing",
+      "description": "Model router: basic routing, subagent/task-type override, fallback, validation",
+      "accepts_workspace": false,
+      "returns_exit_code": false,
+      "signal": "exception_only"
+    },
+    {
+      "name": "model_policy_violations",
+      "module": "examples.test_v021_routing_policy_violations",
+      "callable": null,
+      "category": "routing",
+      "description": "Routing policy violations: downgrade, sovereignty, minimum class",
+      "accepts_workspace": false,
+      "returns_exit_code": false,
+      "signal": "run_functions",
+      "functions": ["test_policy_violation_scenarios", "test_downgrade_constraint"]
+    },
+    {
+      "name": "audit_integration",
+      "module": "examples.test_audit_integration",
+      "callable": "test_audit_logging",
+      "category": "audit",
+      "description": "Audit integration: policy violation logging to audit trail",
+      "accepts_workspace": false,
+      "returns_exit_code": false,
+      "signal": "exception_only"
+    },
+    {
+      "name": "knower_claim_review",
+      "module": "tests.test_knower_claim_review",
+      "callable": "main",
+      "category": "worker",
+      "description": "KnowER claim review: 6 phases, claim classification, source quality, governance, malformed rejection",
+      "accepts_workspace": false,
+      "returns_exit_code": false,
+      "signal": "global_flag"
+    },
+    {
+      "name": "knower_myth_fact",
+      "module": "tests.test_knower_myth_fact",
+      "callable": "main",
+      "category": "worker",
+      "description": "KnowER myth/fact: 5 phases, classification, source quality, governance, malformed rejection",
+      "accepts_workspace": false,
+      "returns_exit_code": false,
+      "signal": "global_flag"
+    },
+    {
+      "name": "cryer_worker",
+      "module": "tests.test_cryer_worker",
+      "callable": "main",
+      "category": "worker",
+      "description": "CryER v0.4.0 worker: 6 packet types, live validation, edge cases, governance boundary",
+      "accepts_workspace": false,
+      "returns_exit_code": false,
+      "signal": "global_flag"
+    },
+    {
+      "name": "knower_inference_mode",
+      "module": "tests.test_knower_inference_mode",
+      "callable": "main",
+      "category": "inference",
+      "description": "KnowER inference mode: mock adapter, governance enforcement, deterministic fallback, L5/L6 validation, audit metadata",
+      "accepts_workspace": false,
+      "returns_exit_code": false,
+      "signal": "global_flag"
+    },
+    {
+      "name": "output_sanitizer",
+      "module": "tests.test_output_sanitizer",
+      "callable": "main",
+      "category": "inference",
+      "description": "Output sanitizer: deterministic JSON extraction from model output (code fences, preamble, prefixes, trailing text)",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "hermes_cli_adapter",
+      "module": "tests.test_hermes_cli_adapter",
+      "callable": "main",
+      "category": "inference",
+      "description": "HermesCLIAdapter: factory, availability check, dry run, live inference (if Hermes CLI available)",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "real_inference_v043",
+      "module": "tests.test_real_inference_v043",
+      "callable": "main",
+      "category": "inference",
+      "description": "v0.4.3 E2E: real Hermes inference → sanitizer → KnowER packet → L1-L6 validation, with raw+sanitized audit trail",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "cryer_real_inference",
+      "module": "tests.test_cryer_real_inference",
+      "callable": "main",
+      "category": "inference",
+      "description": "CryER v0.5.0 inference: L1-L6 validation, 7 packet types, governance rules, L5/L6 enforcement, deterministic fallback",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "coder_patch_plan",
+      "module": "tests.test_coder_patch_plan",
+      "callable": "main",
+      "category": "inference",
+      "description": "CodER v0.6.0 patch plan: inference happy path, deterministic fallback, approval_required enforcement, forbidden shell rejection, governance override rejection, direct subagent routing rejection",
+      "accepts_workspace": false,
+      "returns_exit_code": false,
+      "signal": "global_flag"
+    },
+    {
+      "name": "pyper_execution_plan",
+      "module": "tests.test_pyper_execution_plan",
+      "callable": "main",
+      "category": "inference",
+      "description": "PypER v0.7.0 execution plan: valid plan, valid refusal, governance override rejection, direct routing rejection, shell chain rejection, curl|bash rejection, pip install rejection, fake receipt rejection, deterministic fallback, privilege escalation rejection",
+      "accepts_workspace": false,
+      "returns_exit_code": false,
+      "signal": "global_flag"
+    },
+    {
+      "name": "workflow_graph",
+      "module": "tests.test_workflow_graph",
+      "callable": "main",
+      "category": "workflow",
+      "description": "Workflow Graph DAG model: node/edge validation, cycle detection, sovereignty, packet type compatibility, serialization, factory methods (15 tests)",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "workflow_runner",
+      "module": "tests.test_workflow_runner",
+      "callable": "main",
+      "category": "workflow",
+      "description": "Workflow Runner orchestration: KnowER->CryER, CryER->PypER, CodER->PypER execution, validation failure, policy violation, approval gates, audit trace, replay, deterministic fallback (12 tests)",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "workflow_policy",
+      "module": "tests.test_workflow_policy",
+      "callable": "main",
+      "category": "workflow",
+      "description": "Workflow Policy governance: node execution, edge handoff, approval gates, retry limits, deterministic fallback, content safety, full workflow check (36 tests)",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "packet_type": "cryer_engagement_signal",
+  "version": "1.0",
+  "timestamp": "2026-05-10T18:31:00Z",
+  "source": "cryer",
+  "target": "overcr",
+  "task_id": "task-0021",
+  "summary": "CryER engagement signal analysis for: Beta LLC",
+  "engagement_signal_data": {
+    "entity": "Beta LLC",
+    "metrics": [
+      {
+        "type": "review_count",
+        "classification": "observed",
+        "value": "87",
+        "confidence": 90,
+        "source_quality": "primary",
+        "unknowns": []
+      },
+      {
+        "type": "average_rating",
+        "classification": "observed",
+        "value": "4.2",
+        "confidence": 88,
+        "source_quality": "primary",
+        "unknowns": []
+      },
+      {
+        "type": "response_rate",
+        "classification": "inferred",
+        "value": "65%",
+        "confidence": 55,
+        "source_quality": "secondary",
+        "unknowns": ["Response rate estimated from available data"]
+      }
+    ],
+    "engagement_summary": "Beta LLC shows strong engagement with 87 reviews and 4.2 average rating. Response rate appears moderate at ~65%.",
+    "recommended_routing": "overcr"
+  },
+  "audit_trail": {
+    "worker_version": "0.4.0",
+    "execution_timestamp": "2026-05-10T18:31:01Z",
+    "methods_used": ["public_signal_analysis"],
+    "files_modified": [],
+    "rollback_instructions": "No filesystem changes made by worker. Analysis only."
+  },
+  "approval_required": false,
+  "next_steps_recommendation": "No external action needed. Route to OverCR for downstream handling."
+}

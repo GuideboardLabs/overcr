@@ -1,0 +1,132 @@
+# OverCR v0.2.1 Model Routing Configuration
+# ============================================
+#
+# Defines model routing policy per route, subagent, and task type.
+# Model selection is dynamic, fallback-enabled, and audit-tracked.
+#
+# Resolution order:
+#   1. Task-type override (explicit task_type in request)
+#   2. Subagent-specific preferred_model
+#   3. Route-specific preferred_model
+#   4. Default fallback
+#
+# Failure policy:
+#   - Model/provider timeout → automatic fallback to fallback_model
+#   - Empty/invalid response → automatic fallback to fallback_model
+#   - Fallback also fails → task state NOT advanced, error recorded in audit
+#   - Routing failure NEVER advances task state
+#
+# This is a runtime policy layer — not a provider lock-in.
+# OverCR remains runtime-agnostic. Swapping providers does not
+# change doctrine, governance, or task state.
+
+version: "0.2.1"
+
+_routes:
+  # Primary route -> model mappings
+  # Routes are task-type or domain-level labels; subagents are mapped separately.
+
+  overcr_hq:
+    preferred_model: "glm-5.1:cloud"
+    fallback_model: "qwen3-coder-next"
+    provider: "ollama-cloud"
+    timeout: 60
+
+  code:
+    preferred_model: "qwen3-coder-next"
+    fallback_model: "glm-5.1:cloud"
+    provider: "ollama-cloud"
+    timeout: 90
+
+  research:
+    preferred_model: "glm-5.1:cloud"
+    fallback_model: "qwen3-coder-next"
+    provider: "ollama-cloud"
+    timeout: 120
+
+  diagnostics:
+    preferred_model: "qwen3-coder-next"
+    fallback_model: "glm-5.1:cloud"
+    provider: "ollama-cloud"
+    timeout: 90
+
+  analysis:
+    preferred_model: "glm-5.1:cloud"
+    fallback_model: "qwen3-coder-next"
+    provider: "ollama-cloud"
+    timeout: 120
+
+  outreach:
+    preferred_model: "glm-5.1:cloud"
+    fallback_model: "qwen3-coder-next"
+    provider: "ollama-cloud"
+    timeout: 90
+
+  recon:
+    preferred_model: "glm-5.1:cloud"
+    fallback_model: "qwen3-coder-next"
+    provider: "ollama-cloud"
+    timeout: 90
+
+  local_boot:
+    preferred_model: "qwen3:4b"
+    fallback_model: "glm-5.1:cloud"
+    provider: "ollama"
+    timeout: 180
+
+  default:
+    preferred_model: "qwen3-coder-next"
+    fallback_model: "glm-5.1:cloud"
+    provider: "ollama-cloud"
+    timeout: 60
+
+_subagents:
+  # Subagent-specific overrides.
+  # Each subagent may declare preferred_model, fallback_model, provider, timeout.
+  # Subagent config takes priority over route config when resolving.
+
+  coder:
+    preferred_model: "qwen3-coder-next"
+    fallback_model: "glm-5.1:cloud"
+    provider: "ollama-cloud"
+    timeout: 90
+
+  knower:
+    preferred_model: "glm-5.1:cloud"
+    fallback_model: "qwen3-coder-next"
+    provider: "ollama-cloud"
+    timeout: 120
+
+  cryer:
+    preferred_model: "glm-5.1:cloud"
+    fallback_model: "qwen3-coder-next"
+    provider: "ollama-cloud"
+    timeout: 90
+    # Note: future fast web model for CryER recon tasks
+
+  pyper:
+    preferred_model: "glm-5.1:cloud"
+    fallback_model: "qwen3-coder-next"
+    provider: "ollama-cloud"
+    timeout: 120
+
+_routes_to_subagents:
+  # Map route names to subagent names.
+  # Used by the model router to resolve subagent <- route when
+  # only a route is known (e.g., domain-based routing).
+
+  overcr_hq: "coder"
+  code: "coder"
+  research: "knower"
+  diagnostics: "coder"
+  analysis: "knower"
+  outreach: "pyper"
+  recon: "cryer"
+  local_boot: "pyper"
+  default: "coder"
+
+_audit:
+  enabled: true
+  log_model_selection: true
+  log_fallback_count: true
+  log_failure_reason: true

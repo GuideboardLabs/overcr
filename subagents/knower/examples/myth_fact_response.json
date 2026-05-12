@@ -1,0 +1,78 @@
+{
+  "packet_type": "knower_myth_fact",
+  "version": "1.0",
+  "timestamp": "2026-05-10T16:00:00Z",
+  "source": "knower",
+  "target": "overcr",
+  "task_id": "task-0002",
+  "summary": "KnowER myth/fact classification: 5 statements about regional economic trends classified as myth/fact/partial_truth/unverified with confidence ratings and source quality",
+  "myth_fact_data": {
+    "topic": "Regional economic growth myths and facts",
+    "items": [
+      {
+        "statement": "The region has lost 40% of its manufacturing jobs since 2005",
+        "classification": "partial_truth",
+        "confidence": 3,
+        "source_quality": "secondary",
+        "explanation": "Provided data shows a 28% decline in manufacturing employment, not 40%. The 40% figure appears to conflate job losses with facility closures. The actual decline is significant but less severe than claimed.",
+        "unknowns": [
+          "Current-year data not yet available in provided input",
+          "Part-time to full-time conversion rates unclear"
+        ]
+      },
+      {
+        "statement": "The county offers no tax incentives for new businesses",
+        "classification": "myth",
+        "confidence": 4,
+        "source_quality": "primary",
+        "explanation": "Provided county economic development documents list three active tax incentive programs: PILOT (Payment In Lieu of Taxes), downtown revitalization exemption, and small business startup credit. The claim directly contradicts available primary documentation.",
+        "unknowns": []
+      },
+      {
+        "statement": "Population has been declining for the last decade",
+        "classification": "fact",
+        "confidence": 3,
+        "source_quality": "secondary",
+        "explanation": "Provided census estimates show a consistent 0.3-0.5% annual population decline over the documented period. While the exact count varies by estimation method, the downward trend is confirmed across multiple data points.",
+        "unknowns": [
+          "Full decade data not available in input — only 7 years covered"
+        ]
+      },
+      {
+        "statement": "The regional university is expanding its engineering program by 50%",
+        "classification": "unverified",
+        "confidence": 1,
+        "source_quality": "unverified",
+        "explanation": "No documentation in provided input supports or refutes this claim. The university's program expansion plans are not mentioned in any of the source materials. Cannot classify without additional information.",
+        "unknowns": [
+          "No university planning documents in provided input",
+          "No enrollment projections available",
+          "Percent growth figure origin unknown"
+        ]
+      },
+      {
+        "statement": "All major employers in the region are downsizing",
+        "classification": "myth",
+        "confidence": 3,
+        "source_quality": "secondary",
+        "explanation": "Provided employer data shows 3 of 8 major employers grew headcount, 2 remained stable, and 3 reduced. 'All major employers downsizing' is a false overgeneralization of a mixed picture.",
+        "unknowns": [
+          "Some employer data is 12+ months old"
+        ]
+      }
+    ],
+    "operator_brief": "Of 5 statements reviewed: 1 fact (population decline), 2 myths (no tax incentives, all employers downsizing), 1 partial truth (job loss percentage exaggerated), 1 unverified (university expansion). Key verification priorities: obtain current-year employment data, verify university expansion plans, confirm full-decade population figures. No external action needed — analysis based solely on provided input."
+  },
+  "audit_trail": {
+    "worker_version": "0.3.0",
+    "execution_timestamp": "2026-05-10T16:00:00Z",
+    "sources_consulted": [
+      {"reference": "Provided census estimates", "reliability": "high"},
+      {"reference": "Provided county economic development documents", "reliability": "high"},
+      {"reference": "Provided employer data", "reliability": "medium"}
+    ],
+    "methodology_notes": "Classification based on provided input text only. No external action taken."
+  },
+  "approval_required": false,
+  "next_steps_recommendation": "Route myth/fact results to operator for review. No external action needed."
+}
