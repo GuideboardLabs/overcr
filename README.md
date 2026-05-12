@@ -1,37 +1,45 @@
 # OverCR 
 (v1.0.0 — Stabilized Substrate)
-$: ~/summon
+![OverCR Hermes TUI](demo/demohermestui.png)
 
-     
-                                 ▀█
-             ████     ████       ▀█▓▀▀▓▄            █▒
-              █▓▀█▐█ ▓███         ▀█▒▓▒░▓░  ▄██▄  ███▒
-                █▄▒█▒█▌            ▀▒▐▒ ▒ ▀█▀███▀▄▌▄█
-                 ▓▒██░               ▓░░░▒░▒▒████▒▒▀
-                 ▀▓█▓                 ░▄▒ ▒▒▐▀▒██▄░
-                 ▒▀█▌                    ▒░▒▒▒░█▓▒        ▄▄
-                 ░▓█▒                   ▀░ ▀▓█░██░ ░ ▄█▌▒█▄▌▀▀▒▒▒
-               █▌▄▄██░█           ▒   ▄▄░▒▄▄▀▌▀▀▒▐████████████▒▒
-              ▒█▄▓███▒         █▓▓▄▄▀ ▐░░▓▒▓███▀█▐█▐░▒██▀▄████▓▄▒
-              ░░▀▒▀██       ░█████▀ ▒▄▓██████████▒▀▀██ ▓▓▓█▀████▓▒
-               ░  ░█░▐░    ▀▀▀▀▐▒ ▐▓██████████████▓░  ░░ ░██████▌▒░
-           ▄  ▐  ▐▓█▓▐█▌▄▄▀▀▀▒░  ▄▓▒▀██████████▓██▓▒  ▐▒▐▄░░     ▀▀░
-     ▐█▌▓█▌▐███████████████▌▀▒░  ░ ▐▒█▓▓██▓█▓█▓▓███▌▒  ▓█▄▀▌▒▀█▓▀▒
-       ▓    ▐ ▄░ ▐▒████████████▀ ░░▐░▒▓▀▄▓▒▒▒▒▓██▓▒▌░   ▐▓▀░▓▄░▒▓▀▀▒
-            ▀▒█░▒▒▐███▓██▌  ░▐▒  ░░░▐▒▒▌▒▒▒▀▓▀▒▓▒▒▒░     ▐█▓░▒██▓▓▄▒▒░
-             █▒▌▒▒▒█▓█▌██         ▒ ▒▒░░▀▀█▓▄▒▓▌▄▒░░       ▀▓▌▄░▒▀▀▀█▒▒▀▄
-             █▒▌▒▒▒███▌██░        ▐  ▒▒▒▒▒▒░▒░▄▒▄▐░     ▒    ▀███▄█▒░▒▀▒░▒▀▐
-             █░▌▓▒▒█▓████     ░   ░░▒▐▒▓███▄▓█▓█▓▌▒░   ░    ░░░▀█▓▓▓▒░░▒  ░▐
-             █▒▌▒▒▌███▌██ ░    ░   ░░▒▐▒▓███▄▓█▓█▓▌▒░   ░    ░░░▀█▓▓▓▒░░▒  ░▐
-             █░▌▓▒▒█▓████     ░  ▒▐▒▒░▀█▒▓▓▓█▀▀▀▓█▌▀▐░   ░  ▒▌███░▐▀▓▒▌▒ ▒    ░
-             █▒▌▒▒▒█▓████     ░░░░▐░▒░▄░▒▀░░▓▓██▓███▒░   ░  ░▄█▓█▓░  ▒▀▌▓▄▐▒
-             █▒▌▒▒▒█▓▓▌██     ░ ▒▌ ░ ░▒░▐▒█▒ ▀▓██▓██▓▒░     ░▌██▓▌░   ▐▒▒▓▒ ░▒░
-             █▒▌▒▒▐██▓▌██     ░▄░░ ▒ ░▐█▓░█▓ ▀▓█████▓▒▒░    ▄▒██▓▒     ▐▌▒░▒▒
-             █▒▌▒▒▒█▓▓▌██    ░░░░ ▐▒░▒▓▒▌░▓▌  ▒ ░░░ ▀░░░░ ░▄▐▒▄▌▀▐      ▐▌▒ ░▒░
+![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
+![Runtime](https://img.shields.io/badge/Runtime-Hermes--first-purple)
+![Architecture](https://img.shields.io/badge/Architecture-Filesystem--first-green)
+![Validation](https://img.shields.io/badge/Validation-L1--L6-critical)
+![Tests](https://img.shields.io/badge/Tests-26%2F26%20passing-brightgreen)
+![Release](https://img.shields.io/badge/Release-v1.0.0-gold)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![Status](https://img.shields.io/badge/Status-Stable-success)
 
-OverCR (Operational Vigilance, Execution, Recovery, Command & Routing) is a **Hermes-first portable AI orchestration substrate**. Hermes Agent is its **reference execution runtime**. OverCR provides identity, doctrine, boot continuity, governance, and operational structure. It is not a product or vertical — workloads run inside it.
+---
 
-This is the **clean-core release** — deployment-agnostic, free of live-test contamination, personal operational context, and project-specific assumptions. It contains everything needed to cold-start an OverCR instance from zero.
+OverCR (Operational Vigilance, Execution, Recovery, Command & Routing) is a **Hermes-first portable AI orchestration substrate**.
+
+It is not a chatbot, a SaaS wrapper, or a vertical product. It is the governed operating layer that AI workloads run inside.
+
+OverCR provides identity, doctrine, boot continuity, filesystem-first state, subagent routing, packet validation, workflow choreography, audit trails, and approval-aware operational structure. Hermes Agent is the **reference execution runtime**.
+
+This is the **clean-core release**: deployment-agnostic, free of live-test contamination, personal operational context, and project-specific assumptions. It contains everything needed to cold-start an OverCR instance from zero.
+
+## What OverCR Provides
+
+| Capability | Purpose |
+|---|---|
+| Filesystem-first continuity | Canonical state lives on disk, not in chat history |
+| Governed subagents | Specialist workers operate through typed packets and approval gates |
+| L1-L6 validation | Model and worker output is untrusted until sanitized and validated |
+| Workflow choreography | Bounded, auditable DAGs route work across subagents through OverCR |
+| Runtime portability | Hermes is the reference runtime; other runtimes may implement the host contract |
+| Recovery discipline | Cold starts, replays, and freezes are designed into the substrate |
+
+## Core Guarantees
+
+- **Filesystem truth is authoritative.** Chat history is ephemeral; filesystem state is canonical.
+- **Model output is untrusted.** Outputs must be sanitized and validated before state advancement.
+- **OverCR is sovereign.** Subagents never route directly to each other.
+- **No autonomous outbound contact.** External contact requires explicit operator approval.
+- **No autonomous filesystem mutation.** CodER and PypER produce plans, not unsupervised host actions.
+- **Hermes-first, runtime-agnostic.** Hermes is the validated reference runtime; compatibility with other runtimes is possible but not guaranteed.
 
 ## What This Is Not
 
