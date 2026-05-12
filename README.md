@@ -1,6 +1,33 @@
-# OverCR v1.0.0 — Stabilized Substrate
+# OverCR 
+(v1.0.0 — Stabilized Substrate)
+$: ~/summon
 
-## What This Is
+     
+                                 ▀█
+             ████     ████       ▀█▓▀▀▓▄            █▒
+              █▓▀█▐█ ▓███         ▀█▒▓▒░▓░  ▄██▄  ███▒
+                █▄▒█▒█▌            ▀▒▐▒ ▒ ▀█▀███▀▄▌▄█
+                 ▓▒██░               ▓░░░▒░▒▒████▒▒▀
+                 ▀▓█▓                 ░▄▒ ▒▒▐▀▒██▄░
+                 ▒▀█▌                    ▒░▒▒▒░█▓▒        ▄▄
+                 ░▓█▒                   ▀░ ▀▓█░██░ ░ ▄█▌▒█▄▌▀▀▒▒▒
+               █▌▄▄██░█           ▒   ▄▄░▒▄▄▀▌▀▀▒▐████████████▒▒
+              ▒█▄▓███▒         █▓▓▄▄▀ ▐░░▓▒▓███▀█▐█▐░▒██▀▄████▓▄▒
+              ░░▀▒▀██       ░█████▀ ▒▄▓██████████▒▀▀██ ▓▓▓█▀████▓▒
+               ░  ░█░▐░    ▀▀▀▀▐▒ ▐▓██████████████▓░  ░░ ░██████▌▒░
+           ▄  ▐  ▐▓█▓▐█▌▄▄▀▀▀▒░  ▄▓▒▀██████████▓██▓▒  ▐▒▐▄░░     ▀▀░
+     ▐█▌▓█▌▐███████████████▌▀▒░  ░ ▐▒█▓▓██▓█▓█▓▓███▌▒  ▓█▄▀▌▒▀█▓▀▒
+       ▓    ▐ ▄░ ▐▒████████████▀ ░░▐░▒▓▀▄▓▒▒▒▒▓██▓▒▌░   ▐▓▀░▓▄░▒▓▀▀▒
+            ▀▒█░▒▒▐███▓██▌  ░▐▒  ░░░▐▒▒▌▒▒▒▀▓▀▒▓▒▒▒░     ▐█▓░▒██▓▓▄▒▒░
+             █▒▌▒▒▒█▓█▌██         ▒ ▒▒░░▀▀█▓▄▒▓▌▄▒░░       ▀▓▌▄░▒▀▀▀█▒▒▀▄
+             █▒▌▒▒▒███▌██░        ▐  ▒▒▒▒▒▒░▒░▄▒▄▐░     ▒    ▀███▄█▒░▒▀▒░▒▀▐
+             █░▌▓▒▒█▓████     ░   ░░▒▐▒▓███▄▓█▓█▓▌▒░   ░    ░░░▀█▓▓▓▒░░▒  ░▐
+             █▒▌▒▒▌███▌██ ░    ░   ░░▒▐▒▓███▄▓█▓█▓▌▒░   ░    ░░░▀█▓▓▓▒░░▒  ░▐
+             █░▌▓▒▒█▓████     ░  ▒▐▒▒░▀█▒▓▓▓█▀▀▀▓█▌▀▐░   ░  ▒▌███░▐▀▓▒▌▒ ▒    ░
+             █▒▌▒▒▒█▓████     ░░░░▐░▒░▄░▒▀░░▓▓██▓███▒░   ░  ░▄█▓█▓░  ▒▀▌▓▄▐▒
+             █▒▌▒▒▒█▓▓▌██     ░ ▒▌ ░ ░▒░▐▒█▒ ▀▓██▓██▓▒░     ░▌██▓▌░   ▐▒▒▓▒ ░▒░
+             █▒▌▒▒▐██▓▌██     ░▄░░ ▒ ░▐█▓░█▓ ▀▓█████▓▒▒░    ▄▒██▓▒     ▐▌▒░▒▒
+             █▒▌▒▒▒█▓▓▌██    ░░░░ ▐▒░▒▓▒▌░▓▌  ▒ ░░░ ▀░░░░ ░▄▐▒▄▌▀▐      ▐▌▒ ░▒░
 
 OverCR (Operational Vigilance, Execution, Recovery, Command & Routing) is a **Hermes-first portable AI orchestration substrate**. Hermes Agent is its **reference execution runtime**. OverCR provides identity, doctrine, boot continuity, governance, and operational structure. It is not a product or vertical — workloads run inside it.
 
@@ -116,14 +143,26 @@ These files are live operational state, not part of the core release.
 
 | Version | Date | Type | Notes |
 |---------|------|------|-------|
-| v0.1 | 2026-05-08 | Snapshot | Initial skeleton + soul.md |
-| v0.2 | 2026-05-09 | Snapshot | Full workspace including live state |
-| v0.3-core | 2026-05-09 | Core | Clean separation: doctrine only, no live contamination |
-| v0.0.5 | 2026-05-10 | Orchestration | Task lifecycle + packet validation (extends core, does not replace) |
-| v0.2.2 | 2026-05-10 | Cleanup | Path cleanup: replaced hardcoded paths with $OVERCR_ROOT and dynamic resolution |
-| v0.2.3 | 2026-05-10 | Testing | Consolidated test suite: tests/run_all.py + test_manifest.json |
-| v1.0.0 | 2026-05-11 | Stabilization | Scope freeze, release definition, verification matrix, documentation polish |
-| v0.2.4 | 2026-05-10 | Packaging | Repo hygiene: .gitignore, LICENSE, INSTALL, CHANGELOG, docs, release scripts |
+| v0.0.3 | 2026-05-09 | Clean Core | First clean-core package, purged workload contamination |
+| v0.0.4 | 2026-05-09 | Subagents | Added CryER, PypER, CodER, KnowER doctrine and handoff schemas |
+| v0.0.5 | 2026-05-09 | Orchestration | Task lifecycle, packet lifecycle, validation rules |
+| v0.1.0 | 2026-05-10 | Runtime | Filesystem task runtime, approval gates, audit trail |
+| v0.2.0 | 2026-05-10 | Workers | First live worker bridge: CodER subprocess |
+| v0.2.1 | 2026-05-10 | Routing | Model routing policy, worker registry, health checks |
+| v0.2.2 | 2026-05-10 | Cleanup | Canonical root/path cleanup with `$OVERCR_ROOT` |
+| v0.2.3 | 2026-05-10 | Testing | Consolidated regression suite via `tests/run_all.py` |
+| v0.2.4 | 2026-05-10 | Packaging | GitHub-ready repo hygiene, install docs, release scripts |
+| v0.3.0 | 2026-05-10 | KnowER | KnowER promoted to first-class live worker |
+| v0.4.0 | 2026-05-10 | CryER | CryER worker promoted for public-signal recon over provided inputs |
+| v0.4.1 | 2026-05-10 | Inference | KnowER inference governance with mock adapter |
+| v0.4.2 | 2026-05-10 | Adapter | Hermes CLI adapter infrastructure |
+| v0.4.3 | 2026-05-10 | Live Inference | Real Hermes model output sanitized into validated KnowER packet |
+| v0.5.0 | 2026-05-10 | CryER Inference | CryER live-inference-capable path and governance |
+| v0.6.0 | 2026-05-10 | CodER Inference | Advisory patch-plan inference, no mutation |
+| v0.7.0 | 2026-05-10 | PypER Planning | Execution planning packets, no autonomous execution |
+| v0.8.0 | 2026-05-10 | Workflows | Governed cross-worker workflow choreography |
+| v0.9.0-rc1 | 2026-05-11 | Release Candidate | Threat model, security review, RC gates |
+| v1.0.0 | 2026-05-11 | Stable | Hermes-first portable orchestration substrate |
 
 ## License
 
