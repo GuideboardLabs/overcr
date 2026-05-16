@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "overcr://workflow_composition/composite_workflow.schema.json",
+  "title": "OverCR Composite Workflow Schema v2.8.0",
+  "description": "Schema for composable workflows with conditional edges, retry policy, escalation policy, subworkflow refs, and branch conditions.",
+  "type": "object",
+  "required": ["workflow_id", "workflow_name", "version", "node_definitions"],
+  "properties": {
+    "workflow_id": { "type": "string" },
+    "workflow_name": { "type": "string" },
+    "version": { "type": "string" },
+    "description": { "type": "string" },
+    "node_definitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["node_id", "subagent", "packet_type"],
+        "properties": {
+          "node_id": { "type": "string" },
+          "subagent": { "type": "string" },
+          "packet_type": { "type": "string" },
+          "description": { "type": "string" },
+          "approval_required": { "type": "boolean" },
+          "max_retries": { "type": "integer" },
+          "timeout_seconds": { "type": "number" },
+          "rollback_on_failure": { "type": "boolean" },
+          "on_success": { "type": "string" },
+          "on_failure": { "type": "string" },
+          "on_timeout": { "type": "string" }
+        }
+      }
+    },
+    "edge_definitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["edge_id", "source", "target"],
+        "properties": {
+          "edge_id": { "type": "string" },
+          "source": { "type": "string" },
+          "target": { "type": "string" },
+          "label": { "type": "string" }
+        }
+      }
+    },
+    "conditional_edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["edge_id", "source", "target", "condition"],
+        "properties": {
+          "edge_id": { "type": "string" },
+          "source": { "type": "string" },
+          "target": { "type": "string" },
+          "condition": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "enum": ["confidence_threshold", "trust_tier", "validation_result", "approval_decision", "contradiction_present", "retry_exhausted", "escalation_triggered", "fallback_active", "always", "never"] },
+              "field": { "type": "string" },
+              "operator": { "type": "string", "enum": [">", ">=", "<", "<=", "==", "!=", "in", "not_in", "exists", "not_exists"] },
+              "value": {},
+              "negate": { "type": "boolean" }
+            }
+          },
+          "priority": { "type": "integer", "minimum": 0 },
+          "label": { "type": "string" }
+        }
+      }
+    },
+    "retry_policy": {
+      "type": "object",
+      "properties": {
+        "max_retries": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "retry_delay_s": { "type": "number", "minimum": 0 },
+        "retry_on": { "type": "array", "items": { "type": "string" } },
+        "escalate_after_failure": { "type": "boolean" },
+        "fallback_threshold": { "type": "integer" }
+      }
+    },
+    "escalation_policy": {
+      "type": "object",
+      "properties": {
+        "escalation_points": { "type": "array", "items": { "type": "string" } },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "target": { "type": "string", "enum": ["approval_queue", "operator_review", "contradiction_review", "governance_review", "sandbox_review"] },
+              "condition": { "type": "string" },
+              "pause_workflow": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "fallback_routes": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "subworkflow_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ref_id", "workflow_id", "version"],
+        "properties": {
+          "ref_id": { "type": "string" },
+          "workflow_id": { "type": "string" },
+          "version": { "type": "string" },
+          "input_map": { "type": "object" },
+          "output_map": { "type": "object" }
+        }
+      }
+    },
+    "stop_conditions": { "type": "array", "items": { "type": "string" } },
+    "approval_points": { "type": "array", "items": { "type": "string" } },
+    "timeout_seconds": { "type": "number" }
+  }
+}

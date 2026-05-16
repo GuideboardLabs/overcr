@@ -282,6 +282,36 @@
       "accepts_workspace": false,
       "returns_exit_code": true,
       "signal": "exit_code"
+    },
+    {
+      "name": "integration_hardening",
+      "module": "tests.test_integration_hardening",
+      "callable": "main",
+      "category": "validation",
+      "description": "Integration Hardening v2.9.0: replay determinism, corrupted audit detection, orphaned lineage, broken workflow refs, invalid schema detection, version mismatch, recovery simulation, missing artifact handling, release cleanliness, compatibility matrix, frozen workflow immutability (13 phases)",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "release_candidate",
+      "module": "tests.test_release_candidate",
+      "callable": "main",
+      "category": "validation",
+      "description": "Release Candidate v2.10.0: semantic compatibility, install validation, release builder, manifest generation, version matrix, reproducibility, operator readiness, cross-validator integration (9 phases)",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "final_validation",
+      "module": "tests.test_final_validation",
+      "callable": "main",
+      "category": "validation",
+      "description": "Final Validation v2.10.1: soak tester, security fuzzer, performance baseline, operator acceptance, platform report, readiness checker (8 phases)",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
     }
   ]
 }
