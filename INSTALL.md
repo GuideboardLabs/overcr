@@ -35,7 +35,7 @@ python3 -c "from runtime.overcr_runtime import OverCRRuntime; print('OK')"
 python3 tests/run_all.py
 ```
 
-Expected: 26/26 tests pass.
+Expected: 27 test suites pass.
 
 ### 5. Run a demo
 

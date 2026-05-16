@@ -1,15 +1,14 @@
 # OverCR 
-(v1.0.0 — Stabilized Substrate)
-![OverCR Hermes TUI](demo/demohermestui.png)
+(v2.10.0 — Stable Release Candidate)
 
 ![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
 ![Runtime](https://img.shields.io/badge/Runtime-Hermes--first-purple)
 ![Architecture](https://img.shields.io/badge/Architecture-Filesystem--first-green)
 ![Validation](https://img.shields.io/badge/Validation-L1--L6-critical)
-![Tests](https://img.shields.io/badge/Tests-26%2F26%20passing-brightgreen)
-![Release](https://img.shields.io/badge/Release-v1.0.0-gold)
+![Tests](https://img.shields.io/badge/Tests-27_suites_passing-brightgreen)
+![Release](https://img.shields.io/badge/Release-v2.10.0-gold)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Status](https://img.shields.io/badge/Status-Stable-success)
+![Status](https://img.shields.io/badge/Status-Stable_RC-success)
 
 ---
 
@@ -17,161 +16,142 @@ OverCR (Operational Vigilance, Execution, Recovery, Command & Routing) is a **He
 
 It is not a chatbot, a SaaS wrapper, or a vertical product. It is the governed operating layer that AI workloads run inside.
 
-OverCR provides identity, doctrine, boot continuity, filesystem-first state, subagent routing, packet validation, workflow choreography, audit trails, and approval-aware operational structure. Hermes Agent is the **reference execution runtime**.
+OverCR provides identity, doctrine, boot continuity, filesystem-first state, subagent routing, packet validation (L1-L6), workflow choreography, audit trails, approval gates, semantic memory, operator TUI, knowledge management, controlled web ingestion, execution sandboxing with kernel isolation, integration hardening, and release validation.
 
-This is the **clean-core release**: deployment-agnostic, free of live-test contamination, personal operational context, and project-specific assumptions. It contains everything needed to cold-start an OverCR instance from zero.
+## Capability Layers
 
-## What OverCR Provides
-
-| Capability | Purpose |
-|---|---|
-| Filesystem-first continuity | Canonical state lives on disk, not in chat history |
-| Governed subagents | Specialist workers operate through typed packets and approval gates |
-| L1-L6 validation | Model and worker output is untrusted until sanitized and validated |
-| Workflow choreography | Bounded, auditable DAGs route work across subagents through OverCR |
-| Runtime portability | Hermes is the reference runtime; other runtimes may implement the host contract |
-| Recovery discipline | Cold starts, replays, and freezes are designed into the substrate |
-
-## Core Guarantees
-
-- **Filesystem truth is authoritative.** Chat history is ephemeral; filesystem state is canonical.
-- **Model output is untrusted.** Outputs must be sanitized and validated before state advancement.
-- **OverCR is sovereign.** Subagents never route directly to each other.
-- **No autonomous outbound contact.** External contact requires explicit operator approval.
-- **No autonomous filesystem mutation.** CodER and PypER produce plans, not unsupervised host actions.
-- **Hermes-first, runtime-agnostic.** Hermes is the validated reference runtime; compatibility with other runtimes is possible but not guaranteed.
-
-## What This Is Not
-
-- Not a live workspace snapshot (that's `overcr-live-workspace`)
-- Not a test artifact archive (that's `overcr-test-artifacts`)
-- Not a frozen release backup (that's `overcr-release-archive`)
-- Not specific to any business, region, or client
+| Version | Layer | Description |
+|---------|-------|-------------|
+| v1.0.0 | Substrate Core | Identity, doctrine, boot, subagent routing, L1-L6 packet validation, task lifecycle, approval gates, audit trails |
+| v2.1.0 | Semantic Memory | Governed advisory memory — informs but never authorizes. Rule-gated promotion, conflict detection, deterministic retrieval |
+| v2.2.0 | Operator TUI | Terminal-first observatory — task views, DAG visualization, packet inspection, audit streaming, approval queue. Reads from FS, never mutates |
+| v2.3.0 | Workflow Library | Template-based reusable workflows with registry, loader, executor, isolated contexts |
+| v2.4.0 | Knowledge Layer | Governed research subsystem — source registry, classification, document ingestion, knowledge index, provenance tracking, contradiction detection |
+| v2.5.0 | Web Ingestion | Operator-auditable single-page fetches with URL validation, prompt injection scanning, content normalization, robots policy |
+| v2.6.0 | Execution Sandbox | Approval-gated command execution — 14-command allowlist, 9-check policy, filesystem guard, network guard (default-deny), rollback snapshots, execution receipts |
+| v2.7.0 | Kernel Isolation | Backend abstraction with LocalBackend, BubblewrapBackend, FirejailBackend. Auto-selects strongest available. Isolation profiles, resource limits |
+| v2.8.0 | Workflow Composition | Composite DAGs — condition evaluation, branching, escalation policy, retry policy, routing policy, subworkflow loading with cycle detection, state machine |
+| v2.9.0 | Integration Hardening | 8 validators — schema registry, system validation, replay determinism, state consistency, release integrity, migration checking, compatibility matrix, recovery verification |
+| v2.10.0 | Stable Release | Release preparation — semantic compatibility, install validation, reproducible builds, operator readiness, version matrix, release manifests |
 
 ## Directory Structure
 
 ```
 overcr-core/
   README.md                              # This file
+  CHANGELOG.md                           # Full change history v0.1 → v2.10.0
+  INSTALL.md                             # Installation and quick start
+  RELEASE.md                             # Release notes
+  LICENSE.md                             # MIT license
   soul.md                                # Identity, personality, rules, workflow
   soul_reference.md                      # Integrity-check copy of soul.md
   boot.sh                                # Cold-start boot script
-  prompts/
-    hq_compact_boot.md                   # Boot prompt template
-  configs/
-    cag-memory-config.json.tpl           # CAG integration schema (template)
-    session-ingestion-config.json.tpl    # Session ingestion schema (template)
-    release-preservation-config.txt.tpl  # Archive policy (template)
-  skeleton/
-    memory/routes/hq/.gitkeep            # Directory scaffold
-    workspace/.gitkeep
-    logs/.gitkeep
-    tasks/.gitkeep
-    tui/.gitkeep
+
+  config/                                # YAML configuration
+    inference_routing.yaml               # Inference routing policy
+    model_policy.yaml                    # Model capability/class/sovereignty policy
+    model_routing.yaml                   # Model routing configuration
+    workflow_choreography.yaml           # Workflow choreography definitions
+
+  configs/                               # Config templates (v1-era, fill placeholders)
+  prompts/                               # Boot prompt templates
+  skeleton/                              # Directory scaffold for new instances
+
+  memory/                                # v2.1.0 — Semantic memory layer
+  tui/                                   # v2.2.0 — Operator interface (observatory)
+  workflow_library/                      # v2.3.0 — Reusable workflow templates
+  knowledge/                             # v2.4.0 — Governed research subsystem
+  web_ingestion/                         # v2.5.0 — Controlled web ingestion gateway
+  sandbox/                               # v2.6.0-v2.7.0 — Execution sandbox + kernel isolation
+  workflow_composition/                  # v2.8.0 — Composite DAGs, branching, escalation
+  integration/                           # v2.9.0 — Integration hardening & validators
+  release/                               # v2.10.0 — Release preparation & validation
+  validation/                            # v2.10.1 — Soak tests, perf baselines, fuzzing
+
+  subagents/
+    coder/                               # Advisory code analysis & patch planning
+    cryer/                               # Reconnaissance & signal intelligence
+    knower/                              # Knowledge, research, observation, evaluation
+    pyper/                               # Execution planning & safety review
+
+  runtime/                               # Core runtime (v1.0.0 foundation)
+  orchestration/                         # Task lifecycle, packet examples
+  tools/                                 # validate_packet CLI validator
+
+  tests/                                 # 27 test suites
+  examples/                              # 30+ demo scripts
+  scripts/                               # 15+ check/build/release scripts
+  docs/                                  # Governance, runtime, repo docs
+  security/                              # Threat model, security review
+  references/                            # 35+ architecture reference docs
+  dist/                                  # Release archives
 ```
+
+## Core Guarantees
+
+- **Filesystem truth is authoritative.** Chat history is ephemeral; filesystem state is canonical.
+- **Model output is untrusted.** Outputs must be sanitized and validated (L1-L6) before state advancement.
+- **OverCR is sovereign.** Subagents never route directly to each other. All routing passes through OverCRRuntime.
+- **No autonomous outbound contact.** External contact requires explicit operator approval.
+- **No autonomous filesystem mutation.** CodER and PypER produce plans, not unsupervised host actions.
+- **Semantic memory is advisory.** Memory informs decisions but never authorizes state mutation.
+- **TUI is an observatory.** The operator interface reflects truth from disk; it never creates it.
+- **Hermes-first, runtime-agnostic.** Hermes is the validated reference runtime.
+
+## Subagents
+
+| Subagent | Purpose | Packet Types |
+|----------|---------|-------------|
+| **KnowER** | Knowledge, Observation, Wisdom, Evaluation & Research | claim_review, myth_fact, research, assessment |
+| **CryER** | Reconnaissance & signal intelligence | engagement_signal, recon, reputation_signal, hiring_growth |
+| **CodER** | Code analysis, patch planning, diagnostics | patch_plan, diagnostic, completion, blocked |
+| **PypER** | Execution planning, safety review, receipts | execution_plan, execution_receipt, execution_refusal |
+
+PypER always operates with `approval_required=true` and `execution_authority="none"`. All PypER output routes to the operator, never to another subagent.
 
 ## Quick Start
 
 1. Copy `overcr-core/` to your desired location (e.g., `$HOME/overcr-core`)
-2. Copy `skeleton/` contents into the root (flatten the scaffold):
+2. Copy skeleton contents and fill config templates:
    ```bash
    cp -r skeleton/* .
-   ```
-3. Fill in config templates:
-   ```bash
-   # Replace {{PLACEHOLDER}} values with your deployment paths
    sed -i 's|{{OVERCR_ROOT}}|/your/path/to/overcr|g' configs/*.tpl
-   sed -i 's|{{HERMES_HOME}}|/home/you/.hermes|g' configs/*.tpl
-   sed -i 's|{{CAG_MEMORY_PATH}}|/your/cag/path|g' configs/*.tpl
-   sed -i 's|{{ROUTE_ID}}|your-route-id|g' configs/*.tpl
-   sed -i 's|{{ARCHIVE_ROOT}}|/your/release/archive/path|g' configs/*.tpl
-   # Remove .tpl extension after filling
+   # Replace remaining {{PLACEHOLDER}} values, then:
    for f in configs/*.tpl; do mv "$f" "${f%.tpl}"; done
    ```
-4. Run boot:
-   ```bash
-   ./boot.sh
-   ```
-5. Launch Hermes with the printed command.
+3. Run `./boot.sh` and launch Hermes with the printed command.
 
-## Config Template Variables
+## Testing
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `{{OVERCR_ROOT}}` | Absolute path to OverCR workspace | `$HOME/overcr-core` |
-| `{{HERMES_HOME}}` | Absolute path to Hermes config directory | `$HOME/.hermes` |
-| `{{HERMES_STATE_DB}}` | Absolute path to Hermes SQLite state DB | `$HOME/.hermes/state.db` |
-| `{{HERMES_HISTORY_PATH}}` | Absolute path to Hermes history file | `$HOME/.hermes/.hermes_history` |
-| `{{CAG_MEMORY_PATH}}` | Absolute path to CAG memory store | `$HOME/overcr-cag-memory` |
-| `{{ROUTE_ID}}` | Route identifier for this HQ instance | `overcr-hq` |
-| `{{ARCHIVE_ROOT}}` | Absolute path to release archive directory | `$HOME/overcr-releases` |
+```bash
+cd tests && python run_all.py
+```
 
-## Architecture Principles
-
-1. **Filesystem truth is authoritative.** Chat history is ephemeral; filesystem state is canonical.
-2. **Inspect before acting.** Always read state before modifying it.
-3. **Prefer reversible changes.** Destructive operations require explicit approval.
-4. **Keep work inside the assigned workspace.** Sandbox all operations.
-5. **Cold-start continuity.** Any new instance must be able to boot from filesystem state alone — no chat dependency.
-6. **Release discipline.** Frozen release artifacts are immutable. Live state evolves independently. Never overwrite a release archive.
-7. **Runtime-agnostic but Hermes-first.** Other runtimes may implement the host runtime contract, but Hermes is the only tested reference implementation. Compatibility is not guaranteed.
-
-## Safety & Governance
-
-- **Filesystem-first source of truth.** All canonical state lives on disk. Chat history is ephemeral.
-- **Model output is untrusted until sanitized and validated.** All subagent output passes 6-level validation before any state advancement.
-- **No autonomous outbound contact.** OverCR has no network stack; any outbound action requires explicit operator approval.
-- **No autonomous filesystem mutation.** Workers produce packets; they do not write files, open sockets, or modify state directly.
-- **Open WebUI is an optional secondary visual layer.** Hermes is the reference execution runtime; other runtimes are possible but compatibility is not guaranteed.
-- **PypER and CodER are advisory only.** Their outputs are execution plans and patch plans, not autonomous actions. All plans require operator approval before any host action.
-- **Workflow choreography is bounded, audited, and approval-aware.** Every workflow DAG is pre-flight checked by policy, produces append-only audit traces, and respects approval gates.
-
-## Governance Model
-
-- **soul.md** is the supreme identity document. All operational behavior derives from it.
-- **soul_reference.md** is the integrity check copy. If it diverges from soul.md, something is wrong.
-- **overcr_state.json** (generated at runtime, not in core) tracks live instance state.
-- **HQ_BOOT_MANIFEST.md** and **HQ_ROUTE_MARKER** (generated at runtime) declare the active instance.
-
-## What Gets Generated at Runtime
-
-After booting from this core, the live workspace will generate:
-
-- `overcr_state.json` — instance ID, boot timestamp, runtime config, route declarations
-- `HQ_BOOT_MANIFEST.md` — instance boot record
-- `HQ_ROUTE_MARKER` — session route declaration
-- `HQ_BOOT_VERIFICATION.txt` — integrity check script
-- `prompts/hq_boot_context_bundle.txt` — generated boot briefing
-- `prompts/hq_raw_boot_context.txt` — raw boot instructions
-- `sessions/hq/` — session logs
-
-These files are live operational state, not part of the core release.
+27 test suites covering every v2.x subsystem: memory, TUI, workflows, knowledge, web ingestion, sandbox backends, integration hardening, release candidate, workflow composition, and more.
 
 ## Version History
 
 | Version | Date | Type | Notes |
 |---------|------|------|-------|
-| v0.0.3 | 2026-05-09 | Clean Core | First clean-core package, purged workload contamination |
-| v0.0.4 | 2026-05-09 | Subagents | Added CryER, PypER, CodER, KnowER doctrine and handoff schemas |
-| v0.0.5 | 2026-05-09 | Orchestration | Task lifecycle, packet lifecycle, validation rules |
+| v0.0.3–v0.0.5 | 2026-05-09/10 | Core | Clean core, subagents, orchestration |
 | v0.1.0 | 2026-05-10 | Runtime | Filesystem task runtime, approval gates, audit trail |
-| v0.2.0 | 2026-05-10 | Workers | First live worker bridge: CodER subprocess |
-| v0.2.1 | 2026-05-10 | Routing | Model routing policy, worker registry, health checks |
-| v0.2.2 | 2026-05-10 | Cleanup | Canonical root/path cleanup with `$OVERCR_ROOT` |
-| v0.2.3 | 2026-05-10 | Testing | Consolidated regression suite via `tests/run_all.py` |
-| v0.2.4 | 2026-05-10 | Packaging | GitHub-ready repo hygiene, install docs, release scripts |
-| v0.3.0 | 2026-05-10 | KnowER | KnowER promoted to first-class live worker |
-| v0.4.0 | 2026-05-10 | CryER | CryER worker promoted for public-signal recon over provided inputs |
-| v0.4.1 | 2026-05-10 | Inference | KnowER inference governance with mock adapter |
-| v0.4.2 | 2026-05-10 | Adapter | Hermes CLI adapter infrastructure |
-| v0.4.3 | 2026-05-10 | Live Inference | Real Hermes model output sanitized into validated KnowER packet |
-| v0.5.0 | 2026-05-10 | CryER Inference | CryER live-inference-capable path and governance |
-| v0.6.0 | 2026-05-10 | CodER Inference | Advisory patch-plan inference, no mutation |
-| v0.7.0 | 2026-05-10 | PypER Planning | Execution planning packets, no autonomous execution |
-| v0.8.0 | 2026-05-10 | Workflows | Governed cross-worker workflow choreography |
-| v0.9.0-rc1 | 2026-05-11 | Release Candidate | Threat model, security review, RC gates |
+| v0.2.0–v0.2.4 | 2026-05-10 | Workers | First live workers, routing, testing, packaging |
+| v0.3.0–v0.4.3 | 2026-05-10 | KnowER | KnowER live worker, inference governance, real inference |
+| v0.5.0–v0.6.0 | 2026-05-10 | CryER, CodER | CryER live inference, CodER advisory patch planning |
+| v0.7.0–v0.8.0 | 2026-05-10/11 | PypER, Workflows | Execution planning, cross-worker workflow choreography |
+| v0.9.0-rc1 | 2026-05-11 | RC | Threat model, security review |
 | v1.0.0 | 2026-05-11 | Stable | Hermes-first portable orchestration substrate |
+| v2.1.0 | 2026-05-11 | Memory | Governed semantic memory layer |
+| v2.2.0 | 2026-05-11 | TUI | Terminal-first operator observatory |
+| v2.3.0 | 2026-05-11 | Workflows | Template-based workflow library |
+| v2.4.0 | 2026-05-11 | Knowledge | Governed research & knowledge subsystem |
+| v2.5.0 | 2026-05-11 | Web Ingestion | Controlled web ingestion gateway |
+| v2.6.0 | 2026-05-11 | Sandbox | Controlled execution sandbox |
+| v2.7.0 | 2026-05-11 | Isolation | Kernel isolation backends (bubblewrap, firejail) |
+| v2.8.0 | 2026-05-11 | Composition | Composite workflow DAGs, branching, escalation |
+| v2.9.0 | 2026-05-11 | Hardening | Integration validators, replay, state consistency |
+| v2.10.0 | 2026-05-16 | Stable RC | Release preparation, semantic compatibility, reproducibility |
 
 ## License
 
-Internal use. Not for redistribution without authorization.
+MIT License. See LICENSE.md.
