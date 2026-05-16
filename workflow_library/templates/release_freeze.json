@@ -1,0 +1,118 @@
+{
+  "workflow_id": "release_freeze",
+  "workflow_name": "Release Freeze Workflow",
+  "version": "2.3.0",
+  "description": "Run validation checks across the OverCR codebase, compile an audit summary, generate a release candidate report, and produce a freeze artifact. Used before any versioned release.",
+  "tags": [
+    "release",
+    "freeze",
+    "validation",
+    "audit",
+    "rc"
+  ],
+  "timeout_seconds": 300.0,
+  "entry_conditions": [
+    "registry_available",
+    "templates_directory_exists"
+  ],
+  "node_definitions": [
+    {
+      "node_id": "validation_checks",
+      "subagent": "coder",
+      "packet_type": "coder_diagnostic",
+      "description": "Run all validation checks: schema compliance, test suite, linting, security scans, version consistency",
+      "approval_required": false,
+      "max_retries": 3,
+      "timeout_seconds": 120.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "audit_summary",
+      "subagent": "coder",
+      "packet_type": "coder_diagnostic",
+      "description": "Compile audit summary: test results, coverage, open issues, regression flags, changelog verification",
+      "approval_required": false,
+      "max_retries": 1,
+      "timeout_seconds": 45.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "freeze_artifact",
+      "subagent": "coder",
+      "packet_type": "coder_completion",
+      "description": "Produce freeze artifact: version lock file, dependency snapshot, checksums, signed manifest",
+      "approval_required": true,
+      "max_retries": 1,
+      "timeout_seconds": 60.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "rc_report",
+      "subagent": "pyper",
+      "packet_type": "pyper_execution_plan",
+      "description": "Generate release candidate report: readiness score, blocking issues, risk assessment, recommended go/no-go",
+      "approval_required": true,
+      "max_retries": 1,
+      "timeout_seconds": 45.0,
+      "rollback_on_failure": true
+    },
+    {
+      "node_id": "release_packet",
+      "subagent": "pyper",
+      "packet_type": "pyper_execution_receipt",
+      "description": "Final release packet with audit trail, RC report, freeze artifact, and operator approval requirements",
+      "approval_required": true,
+      "max_retries": 1,
+      "timeout_seconds": 15.0,
+      "rollback_on_failure": false
+    }
+  ],
+  "edge_definitions": [
+    {
+      "edge_id": "e1",
+      "source": "validation_checks",
+      "target": "audit_summary",
+      "label": "Validation results for audit compilation"
+    },
+    {
+      "edge_id": "e2",
+      "source": "audit_summary",
+      "target": "freeze_artifact",
+      "label": "Audit summary for freeze artifact generation"
+    },
+    {
+      "edge_id": "e3",
+      "source": "freeze_artifact",
+      "target": "rc_report",
+      "label": "Freeze artifact for RC report generation"
+    },
+    {
+      "edge_id": "e4",
+      "source": "rc_report",
+      "target": "release_packet",
+      "label": "RC report for final release packet"
+    }
+  ],
+  "stop_conditions": [
+    "release_packet"
+  ],
+  "approval_points": [
+    "rc_report",
+    "freeze_artifact",
+    "release_packet"
+  ],
+  "rollback_behavior": "on_validation_failure_abort_release",
+  "deterministic_fallback": "stop",
+  "audit_requirements": [
+    "workflow_id",
+    "workflow_version",
+    "node_execution_order",
+    "approval_pauses",
+    "rollback_events",
+    "validation_results",
+    "deterministic_fallback_activations",
+    "elapsed_timing"
+  ],
+  "_registered_at": "2026-05-16T03:34:13.638084+00:00",
+  "_registered_version": "2.3.0"
+}

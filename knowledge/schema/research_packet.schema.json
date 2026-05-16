@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "overcr://knowledge/research_packet.schema.json",
+  "title": "OverCR Research Packet Envelope v2.4.0",
+  "description": "Schema for research packets produced by the knowledge subsystem. All packets carry provenance chains, citation references, and audit metadata. Every conclusion must reference its source lineage.",
+  "type": "object",
+  "required": [
+    "packet_type",
+    "version",
+    "timestamp",
+    "source",
+    "target",
+    "task_id",
+    "summary",
+    "provenance_chain",
+    "citation_refs",
+    "audit_metadata"
+  ],
+  "properties": {
+    "packet_type": {
+      "type": "string",
+      "enum": ["knower_claim_review", "knower_myth_fact", "knower_research", "research_brief", "contradiction_summary", "source_quality"],
+      "description": "Type of research packet."
+    },
+    "version": { "type": "string", "const": "1.0" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "source": { "type": "string", "const": "knower" },
+    "target": { "type": "string", "const": "overcr" },
+    "task_id": { "type": "string", "pattern": "^task-\\d{4}$" },
+    "summary": { "type": "string", "minLength": 1 },
+    "provenance_chain": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step", "timestamp", "source_ids"],
+        "properties": {
+          "step": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "operator": { "type": "string" },
+          "source_ids": { "type": "array", "items": { "type": "string" } },
+          "description": { "type": "string" }
+        }
+      },
+      "description": "Full provenance chain: every transformation that produced this packet."
+    },
+    "citation_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "cited_as"],
+        "properties": {
+          "source_id": { "type": "string" },
+          "cited_as": { "type": "string" },
+          "confidence_contribution": { "type": "number", "minimum": 0, "maximum": 1 },
+          "excerpt": { "type": "string" }
+        }
+      },
+      "description": "Sources cited in this packet with attribution details."
+    },
+    "contradiction_indicators": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "claim_a": { "type": "string" },
+          "claim_b": { "type": "string" },
+          "source_a": { "type": "string" },
+          "source_b": { "type": "string" },
+          "severity": { "type": "string", "enum": ["direct", "partial", "contextual"] },
+          "resolution_status": { "type": "string", "enum": ["unresolved", "operator_reviewed", "acknowledged"] }
+        }
+      },
+      "description": "Any contradictions detected between cited sources. Never auto-resolved."
+    },
+    "confidence_scoring": {
+      "type": "object",
+      "properties": {
+        "overall": { "type": "integer", "minimum": 1, "maximum": 4 },
+        "source_quality_weight": { "type": "number" },
+        "corroboration_factor": { "type": "number" },
+        "contradiction_penalty": { "type": "number" }
+      }
+    },
+    "supporting_sources": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Source IDs that support the primary claims in this packet."
+    },
+    "audit_metadata": {
+      "type": "object",
+      "required": ["builder_version", "generated_at", "deterministic_mode", "sources_consulted_count", "contradictions_found"],
+      "properties": {
+        "builder_version": { "type": "string" },
+        "generated_at": { "type": "string", "format": "date-time" },
+        "deterministic_mode": { "type": "boolean" },
+        "sources_consulted_count": { "type": "integer" },
+        "contradictions_found": { "type": "integer" },
+        "stale_sources_flagged": { "type": "integer" },
+        "trust_tiers_represented": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "approval_required": { "type": "boolean" }
+  }
+}

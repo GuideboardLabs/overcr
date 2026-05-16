@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "overcr://web_ingestion/url_request.schema.json",
+  "title": "OverCR URL Request v2.5.0",
+  "description": "Schema for an operator-initiated URL fetch request. Every field is audited; nothing is auto-fetched.",
+  "type": "object",
+  "required": [
+    "url",
+    "requested_by",
+    "requested_at",
+    "project_scope",
+    "purpose"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "minLength": 1,
+      "description": "The exact URL to fetch. Must be http or https."
+    },
+    "requested_by": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Operator identity who initiated the fetch."
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the request was made."
+    },
+    "project_scope": {
+      "type": "string",
+      "description": "Which OverCR project this fetch belongs to."
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Why this URL is being fetched — recorded in provenance."
+    },
+    "allowed_content_types": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": ["text/html", "text/plain", "application/json"],
+      "description": "Acceptable Content-Type values. Others rejected."
+    },
+    "max_bytes": {
+      "type": "integer",
+      "minimum": 1024,
+      "maximum": 10485760,
+      "default": 524288,
+      "description": "Maximum response size in bytes. Default 512KB."
+    },
+    "timeout_s": {
+      "type": "number",
+      "minimum": 1.0,
+      "maximum": 120.0,
+      "default": 30.0,
+      "description": "Fetch timeout in seconds."
+    },
+    "follow_redirects": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to follow HTTP 3xx redirects (still blocked for private IPs)."
+    },
+    "approval_required": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, fetch pauses for operator approval before proceeding."
+    }
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OverCR Workflow Template Schema (v2.3.0)",
+  "description": "Schema for reusable workflow templates operating within the OverCR orchestration, validation, approval, and audit boundaries.",
+  "type": "object",
+  "required": [
+    "workflow_id",
+    "workflow_name",
+    "version",
+    "description",
+    "entry_conditions",
+    "node_definitions",
+    "edge_definitions",
+    "stop_conditions",
+    "approval_points",
+    "rollback_behavior",
+    "deterministic_fallback",
+    "audit_requirements"
+  ],
+  "properties": {
+    "workflow_id": {
+      "type": "string",
+      "description": "Unique identifier for the workflow template (e.g., 'claim_review')"
+    },
+    "workflow_name": {
+      "type": "string",
+      "description": "Human-readable name (e.g., 'Claim Review Workflow')"
+    },
+    "version": {
+      "type": "string",
+      "description": "Semantic version of this template"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this workflow does"
+    },
+    "entry_conditions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Conditions that must be true before workflow starts"
+    },
+    "node_definitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["node_id", "subagent", "packet_type"],
+        "properties": {
+          "node_id": { "type": "string" },
+          "subagent": { "type": "string" },
+          "packet_type": { "type": "string" },
+          "description": { "type": "string" },
+          "approval_required": { "type": "boolean" },
+          "max_retries": { "type": "integer" },
+          "timeout_seconds": { "type": "number" },
+          "rollback_on_failure": { "type": "boolean" }
+        }
+      }
+    },
+    "edge_definitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["edge_id", "source", "target"],
+        "properties": {
+          "edge_id": { "type": "string" },
+          "source": { "type": "string" },
+          "target": { "type": "string" },
+          "label": { "type": "string" }
+        }
+      }
+    },
+    "stop_conditions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Node IDs that trigger workflow stop when reached"
+    },
+    "approval_points": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Node IDs where operator approval is mandatory"
+    },
+    "rollback_behavior": {
+      "type": "string",
+      "description": "Default rollback behavior"
+    },
+    "deterministic_fallback": {
+      "type": "string",
+      "description": "Action when a node fails: 'stop', 'skip', or 'fallback'"
+    },
+    "audit_requirements": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Required audit fields to record"
+    },
+    "timeout_seconds": {
+      "type": "number",
+      "description": "Maximum total execution time"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

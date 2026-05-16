@@ -1,0 +1,109 @@
+{
+  "workflow_id": "coder_patch_review",
+  "workflow_name": "CodER Patch Review Workflow",
+  "version": "2.3.0",
+  "description": "CodER plans a patch, risk assessment is performed, rollback plan is validated, and an approval-required patch proposal is generated. No filesystem mutation without operator approval.",
+  "tags": ["coder", "patch", "review", "risk_assessment", "rollback"],
+  "timeout_seconds": 180.0,
+  "entry_conditions": [
+    "registry_available",
+    "templates_directory_exists"
+  ],
+  "node_definitions": [
+    {
+      "node_id": "patch_planning",
+      "subagent": "coder",
+      "packet_type": "coder_patch_plan",
+      "description": "CodER inspects codebase, diagnoses issue, and drafts a patch plan with proposed diff",
+      "approval_required": false,
+      "max_retries": 2,
+      "timeout_seconds": 60.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "risk_assessment",
+      "subagent": "coder",
+      "packet_type": "coder_diagnostic",
+      "description": "Assess risk level (low/medium/high/critical), identify affected modules, estimate impact radius",
+      "approval_required": false,
+      "max_retries": 1,
+      "timeout_seconds": 30.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "rollback_planning",
+      "subagent": "coder",
+      "packet_type": "coder_patch_plan",
+      "description": "Produce detailed rollback plan: revert steps, safety checks, post-rollback validation",
+      "approval_required": false,
+      "max_retries": 1,
+      "timeout_seconds": 30.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "approval_proposal",
+      "subagent": "coder",
+      "packet_type": "coder_patch_plan",
+      "description": "Operator reviews patch plan, risk assessment, and rollback plan before any filesystem mutation is allowed",
+      "approval_required": true,
+      "max_retries": 0,
+      "timeout_seconds": 10.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "patch_proposal_packet",
+      "subagent": "coder",
+      "packet_type": "coder_completion",
+      "description": "Final approval-required patch proposal with complete documentation for operator",
+      "approval_required": true,
+      "max_retries": 1,
+      "timeout_seconds": 30.0,
+      "rollback_on_failure": false
+    }
+  ],
+  "edge_definitions": [
+    {
+      "edge_id": "e1",
+      "source": "patch_planning",
+      "target": "risk_assessment",
+      "label": "Drafted patch plan for risk assessment"
+    },
+    {
+      "edge_id": "e2",
+      "source": "risk_assessment",
+      "target": "rollback_planning",
+      "label": "Risk assessment for rollback planning"
+    },
+    {
+      "edge_id": "e3",
+      "source": "rollback_planning",
+      "target": "approval_proposal",
+      "label": "Rollback plan for operator approval review"
+    },
+    {
+      "edge_id": "e4",
+      "source": "approval_proposal",
+      "target": "patch_proposal_packet",
+      "label": "Approved patch for final proposal generation"
+    }
+  ],
+  "stop_conditions": [
+    "patch_proposal_packet"
+  ],
+  "approval_points": [
+    "approval_proposal",
+    "patch_proposal_packet"
+  ],
+  "rollback_behavior": "on_high_risk_reject_patch_on_medium_risk_review",
+  "deterministic_fallback": "stop",
+  "audit_requirements": [
+    "workflow_id",
+    "workflow_version",
+    "node_execution_order",
+    "approval_pauses",
+    "rollback_events",
+    "validation_results",
+    "deterministic_fallback_activations",
+    "elapsed_timing"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "overcr://sandbox/execution_request.schema.json",
+  "title": "OverCR Sandbox Execution Request v2.6.0",
+  "description": "Schema for an operator-approved sandbox execution request. Every field is auditable. No execution without explicit approval artifact.",
+  "type": "object",
+  "required": ["execution_id", "operator", "approved_by", "command", "argv", "cwd", "timeout_s", "approval_artifact"],
+  "properties": {
+    "execution_id": { "type": "string", "pattern": "^exec-[a-z0-9]{8}$" },
+    "operator": { "type": "string", "minLength": 1 },
+    "approved_by": { "type": "string", "minLength": 1 },
+    "command": { "type": "string", "minLength": 1 },
+    "argv": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "cwd": { "type": "string" },
+    "timeout_s": { "type": "number", "minimum": 1.0, "maximum": 300.0, "default": 30.0 },
+    "env": { "type": "object" },
+    "purpose": { "type": "string" },
+    "approval_artifact": { "type": "object" },
+    "sandbox_root": { "type": "string" },
+    "dry_run": { "type": "boolean", "default": false }
+  }
+}

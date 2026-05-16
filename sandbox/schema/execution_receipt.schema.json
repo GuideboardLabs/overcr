@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "overcr://sandbox/execution_receipt.schema.json",
+  "title": "OverCR Sandbox Execution Receipt v2.6.0",
+  "description": "Schema for a sandbox execution receipt. Every execution produces exactly one receipt that is append-only and never deleted. Receipts are the canonical audit record of what ran, when, and by whose authority.",
+  "type": "object",
+  "required": ["execution_id", "operator_identity", "approved_by", "executed_command", "argv", "timestamp", "cwd", "exit_code", "rollback_available", "governance_flags"],
+  "properties": {
+    "execution_id": { "type": "string", "pattern": "^exec-[a-z0-9]{8}$" },
+    "operator_identity": { "type": "string" },
+    "approved_by": { "type": "string" },
+    "executed_command": { "type": "string" },
+    "argv": { "type": "array", "items": { "type": "string" } },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "cwd": { "type": "string" },
+    "exit_code": { "type": "integer" },
+    "elapsed_s": { "type": "number" },
+    "stdout_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "stderr_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "stdout_truncated": { "type": "boolean" },
+    "stderr_truncated": { "type": "boolean" },
+    "modified_paths": { "type": "array", "items": { "type": "string" } },
+    "snapshot_refs": { "type": "array", "items": { "type": "string" } },
+    "rollback_available": { "type": "boolean" },
+    "rollback_executed": { "type": "boolean" },
+    "timeout_occurred": { "type": "boolean" },
+    "blocked_by_policy": { "type": "boolean" },
+    "blocked_reason": { "type": "string" },
+    "governance_flags": {
+      "type": "object",
+      "properties": {
+        "command_allowed": { "type": "boolean" },
+        "shell_metacharacters_blocked": { "type": "boolean" },
+        "path_traversal_blocked": { "type": "boolean" },
+        "network_access_blocked": { "type": "boolean" },
+        "sandbox_boundary_intact": { "type": "boolean" },
+        "filesystem_mutation_tracked": { "type": "boolean" }
+      }
+    },
+    "audit_entries": { "type": "array", "items": { "type": "object" } }
+  }
+}

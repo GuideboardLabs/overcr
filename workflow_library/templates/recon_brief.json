@@ -1,0 +1,100 @@
+{
+  "workflow_id": "recon_brief",
+  "workflow_name": "Recon Briefing Workflow",
+  "version": "2.3.0",
+  "description": "CryER extracts signals from public data, KnowER analyzes source quality, scores confidence, and produces a final operator briefing packet.",
+  "tags": [
+    "cryer",
+    "knower",
+    "recon",
+    "signals",
+    "briefing"
+  ],
+  "timeout_seconds": 90.0,
+  "entry_conditions": [
+    "registry_available",
+    "templates_directory_exists"
+  ],
+  "node_definitions": [
+    {
+      "node_id": "cryer_signal_extraction",
+      "subagent": "cryer",
+      "packet_type": "cryer_engagement_signal",
+      "description": "CryER extracts signals from public data sources \u2014 engagement, reputation, booking friction",
+      "approval_required": false,
+      "max_retries": 2,
+      "timeout_seconds": 30.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "knower_source_analysis",
+      "subagent": "knower",
+      "packet_type": "knower_research",
+      "description": "KnowER analyzes source quality, checks for bias, verifies signal authenticity",
+      "approval_required": false,
+      "max_retries": 1,
+      "timeout_seconds": 25.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "confidence_scoring",
+      "subagent": "cryer",
+      "packet_type": "cryer_engagement_signal",
+      "description": "Composite confidence scoring across all signal dimensions",
+      "approval_required": true,
+      "max_retries": 1,
+      "timeout_seconds": 15.0,
+      "rollback_on_failure": true
+    },
+    {
+      "node_id": "briefing_packet",
+      "subagent": "cryer",
+      "packet_type": "cryer_recon",
+      "description": "Compile final operator briefing with signal summary, confidence scores, and recommended routing",
+      "approval_required": false,
+      "max_retries": 1,
+      "timeout_seconds": 15.0,
+      "rollback_on_failure": false
+    }
+  ],
+  "edge_definitions": [
+    {
+      "edge_id": "e1",
+      "source": "cryer_signal_extraction",
+      "target": "knower_source_analysis",
+      "label": "Extracted signals for KnowER source analysis"
+    },
+    {
+      "edge_id": "e2",
+      "source": "knower_source_analysis",
+      "target": "confidence_scoring",
+      "label": "Source-validated signals for confidence scoring"
+    },
+    {
+      "edge_id": "e3",
+      "source": "confidence_scoring",
+      "target": "briefing_packet",
+      "label": "Confidence-scored signals for briefing generation"
+    }
+  ],
+  "stop_conditions": [
+    "briefing_packet"
+  ],
+  "approval_points": [
+    "confidence_scoring"
+  ],
+  "rollback_behavior": "on_confidence_failure_rereview_sources",
+  "deterministic_fallback": "stop",
+  "audit_requirements": [
+    "workflow_id",
+    "workflow_version",
+    "node_execution_order",
+    "approval_pauses",
+    "rollback_events",
+    "validation_results",
+    "deterministic_fallback_activations",
+    "elapsed_timing"
+  ],
+  "_registered_at": "2026-05-16T03:34:13.637808+00:00",
+  "_registered_version": "2.3.0"
+}

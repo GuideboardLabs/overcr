@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "overcr://knowledge/source_record.schema.json",
+  "title": "OverCR Source Record v2.4.0",
+  "description": "Canonical schema for a registered source in the OverCR knowledge subsystem. Sources are immutable once registered; staleness is a status flag, never a deletion.",
+  "type": "object",
+  "required": [
+    "source_id",
+    "source_type",
+    "origin",
+    "created_at",
+    "updated_at",
+    "trust_level",
+    "provenance",
+    "tags",
+    "project_scope",
+    "status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "source_id": {
+      "type": "string",
+      "pattern": "^src-[a-z0-9]{8}$",
+      "description": "Unique identifier. Format: 'src-' + 8-char hex suffix. Immutable."
+    },
+    "source_type": {
+      "type": "string",
+      "enum": ["document", "report", "article", "website", "dataset", "transcript", "memo", "reference", "manual", "legal", "patent", "standard", "other"],
+      "description": "Type classification of the source."
+    },
+    "origin": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048,
+      "description": "Where this source came from: URL, file path, operator upload, citation, etc."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the source record was created."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of last modification to the record (not the source content)."
+    },
+    "trust_level": {
+      "type": "string",
+      "enum": ["verified", "reputable", "unknown", "suspicious", "rejected"],
+      "description": "Trust tier for this source. Never auto-escalated. Operator must explicitly change."
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["ingestion_path", "canonical_refs"],
+      "properties": {
+        "ingestion_path": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Ordered list of transformation steps applied to this source (ingest, normalize, classify, etc.)"
+        },
+        "transformation_chain": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "step": { "type": "string" },
+              "timestamp": { "type": "string", "format": "date-time" },
+              "operator": { "type": "string" },
+              "details": { "type": "string" }
+            }
+          },
+          "description": "Full audit trail of transformations applied to this source."
+        },
+        "canonical_refs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Stable, canonical references for this source (DOI, permalink, stable URL, file hash)."
+        },
+        "workflow_usage": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Workflow run_ids that referenced this source."
+        },
+        "citation_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of times this source has been cited in research packets."
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Searchable tags for categorization."
+    },
+    "project_scope": {
+      "type": "string",
+      "description": "Which OverCR project or workload this source belongs to."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "stale", "archived"],
+      "description": "Current status. Stale/archived sources remain queryable — never deleted."
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 hash of source content at time of ingestion. Used for integrity verification."
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Human-readable summary of the source content."
+    },
+    "content_path": {
+      "type": "string",
+      "description": "Filesystem path to stored content (relative to knowledge/documents/)."
+    }
+  }
+}

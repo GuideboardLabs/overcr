@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "overcr://web_ingestion/web_source_record.schema.json",
+  "title": "OverCR Web Source Record v2.5.0",
+  "description": "Schema for a source record that originated from a web fetch. Extends the v2.4 source record with fetch metadata, robots policy result, and prompt injection risk report.",
+  "type": "object",
+  "required": [
+    "source_id",
+    "url",
+    "fetched_at",
+    "fetch_status",
+    "content_hash",
+    "normalized_content_path",
+    "robots_policy_result",
+    "prompt_injection_report",
+    "provenance"
+  ],
+  "properties": {
+    "source_id": { "type": "string", "pattern": "^src-[a-z0-9]{8}$" },
+    "url": { "type": "string", "format": "uri" },
+    "fetched_at": { "type": "string", "format": "date-time" },
+    "fetch_status": {
+      "type": "string",
+      "enum": ["success", "blocked_scheme", "blocked_private_ip", "blocked_redirect", "timeout", "max_bytes_exceeded", "invalid_content_type", "network_error"]
+    },
+    "fetch_metadata": {
+      "type": "object",
+      "properties": {
+        "response_code": { "type": "integer" },
+        "content_type": { "type": "string" },
+        "response_size_bytes": { "type": "integer" },
+        "elapsed_s": { "type": "number" },
+        "redirect_chain": { "type": "array", "items": { "type": "string" } },
+        "final_url": { "type": "string" }
+      }
+    },
+    "content_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "normalized_content_path": { "type": "string" },
+    "robots_policy_result": {
+      "type": "object",
+      "properties": {
+        "checked": { "type": "boolean" },
+        "allowed": { "type": "boolean" },
+        "policy_url": { "type": "string" },
+        "status": { "type": "string", "enum": ["allowed", "disallowed", "unknown", "error"] },
+        "checked_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "prompt_injection_report": {
+      "type": "object",
+      "properties": {
+        "risk_level": { "type": "string", "enum": ["none", "low", "medium", "high", "critical"] },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "pattern": { "type": "string" },
+              "location": { "type": "string" },
+              "severity": { "type": "string", "enum": ["low", "medium", "high"] }
+            }
+          }
+        },
+        "scanned_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "requested_by": { "type": "string" },
+        "purpose": { "type": "string" },
+        "project_scope": { "type": "string" },
+        "ingestion_path": { "type": "array", "items": { "type": "string" } },
+        "transformation_chain": { "type": "array" }
+      }
+    }
+  }
+}

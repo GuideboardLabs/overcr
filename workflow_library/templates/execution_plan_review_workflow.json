@@ -1,0 +1,110 @@
+{
+  "workflow_id": "execution_plan_review",
+  "workflow_name": "Execution Plan Review Workflow",
+  "version": "2.3.0",
+  "description": "PypER drafts an execution plan, undergoes safety review, checks for execution refusal conditions, and produces a simulated execution receipt. No real execution without operator approval.",
+  "tags": ["pyper", "execution_plan", "safety_review", "refusal", "simulation"],
+  "timeout_seconds": 120.0,
+  "entry_conditions": [
+    "registry_available",
+    "templates_directory_exists"
+  ],
+  "node_definitions": [
+    {
+      "node_id": "execution_planning",
+      "subagent": "pyper",
+      "packet_type": "pyper_execution_plan",
+      "description": "PypER drafts a step-by-step execution plan with dependencies, safety classifications, and dry-run summary",
+      "approval_required": false,
+      "max_retries": 2,
+      "timeout_seconds": 45.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "safety_review",
+      "subagent": "pyper",
+      "packet_type": "pyper_execution_plan",
+      "description": "Safety review: check each step's safety classification, verify no dangerous operations, identify refusal triggers",
+      "approval_required": true,
+      "max_retries": 1,
+      "timeout_seconds": 25.0,
+      "rollback_on_failure": true
+    },
+    {
+      "node_id": "refusal_check",
+      "subagent": "pyper",
+      "packet_type": "pyper_execution_refusal",
+      "description": "Check for execution refusal conditions: unsafe steps, missing dependencies, irreversible side effects",
+      "approval_required": false,
+      "max_retries": 1,
+      "timeout_seconds": 15.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "simulated_execution",
+      "subagent": "pyper",
+      "packet_type": "pyper_execution_receipt",
+      "description": "Simulated dry-run execution receipt — demonstrates what WOULD happen without doing anything real",
+      "approval_required": true,
+      "max_retries": 1,
+      "timeout_seconds": 20.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "final_receipt_packet",
+      "subagent": "pyper",
+      "packet_type": "pyper_execution_receipt",
+      "description": "Final execution receipt with simulated results, safety confirmations, and operator sign-off requirements",
+      "approval_required": true,
+      "max_retries": 1,
+      "timeout_seconds": 10.0,
+      "rollback_on_failure": false
+    }
+  ],
+  "edge_definitions": [
+    {
+      "edge_id": "e1",
+      "source": "execution_planning",
+      "target": "safety_review",
+      "label": "Drafted plan for safety review"
+    },
+    {
+      "edge_id": "e2",
+      "source": "safety_review",
+      "target": "refusal_check",
+      "label": "Safety-reviewed plan for refusal conditions"
+    },
+    {
+      "edge_id": "e3",
+      "source": "refusal_check",
+      "target": "simulated_execution",
+      "label": "Cleared plan for simulated execution"
+    },
+    {
+      "edge_id": "e4",
+      "source": "simulated_execution",
+      "target": "final_receipt_packet",
+      "label": "Simulated results for final receipt generation"
+    }
+  ],
+  "stop_conditions": [
+    "final_receipt_packet"
+  ],
+  "approval_points": [
+    "safety_review",
+    "simulated_execution",
+    "final_receipt_packet"
+  ],
+  "rollback_behavior": "on_refusal_or_safety_failure_abort_plan",
+  "deterministic_fallback": "stop",
+  "audit_requirements": [
+    "workflow_id",
+    "workflow_version",
+    "node_execution_order",
+    "approval_pauses",
+    "rollback_events",
+    "validation_results",
+    "deterministic_fallback_activations",
+    "elapsed_timing"
+  ]
+}

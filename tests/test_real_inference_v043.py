@@ -31,7 +31,15 @@ sys.path.insert(0, str(OVERCR_ROOT))
 from runtime.inference_adapter import get_adapter
 from runtime.inference_result import InferenceStatus, InferenceMetadata
 from runtime.output_sanitizer import sanitize_model_output, sanitize_and_parse
-from tools.validate_packet import validate_packet
+
+# Dynamic import of validate_packet to survive subprocess execution
+import importlib.util as _ilu_vp
+_val_spec = _ilu_vp.spec_from_file_location(
+    "validate_packet", str(OVERCR_ROOT / "tools" / "validate_packet.py"),
+)
+_vp_mod = _ilu_vp.module_from_spec(_val_spec)
+_val_spec.loader.exec_module(_vp_mod)
+validate_packet = _vp_mod.validate_packet
 
 
 def test_real_inference_claim_review():

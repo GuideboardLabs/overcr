@@ -1,0 +1,116 @@
+{
+  "workflow_id": "claim_review",
+  "workflow_name": "Claim Review Workflow",
+  "version": "2.3.0",
+  "description": "Ingest a claim, verify through KnowER, review contradictions, pass approval gate, and produce a final report packet. Claims are classified as fact/myth with evidence tracking.",
+  "tags": [
+    "knower",
+    "claim_review",
+    "myth_fact",
+    "verification"
+  ],
+  "timeout_seconds": 120.0,
+  "entry_conditions": [
+    "registry_available",
+    "templates_directory_exists"
+  ],
+  "node_definitions": [
+    {
+      "node_id": "ingest_claim",
+      "subagent": "knower",
+      "packet_type": "knower_claim_review",
+      "description": "Receive and structure the raw claim for processing",
+      "approval_required": false,
+      "max_retries": 2,
+      "timeout_seconds": 30.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "knower_verification",
+      "subagent": "knower",
+      "packet_type": "knower_claim_review",
+      "description": "KnowER verifies claim against known facts, checks source quality, assigns confidence",
+      "approval_required": true,
+      "max_retries": 1,
+      "timeout_seconds": 30.0,
+      "rollback_on_failure": true
+    },
+    {
+      "node_id": "contradiction_review",
+      "subagent": "knower",
+      "packet_type": "knower_myth_fact",
+      "description": "Review for contradictions against existing myth/fact corpus",
+      "approval_required": false,
+      "max_retries": 2,
+      "timeout_seconds": 20.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "approval_gate",
+      "subagent": "knower",
+      "packet_type": "knower_claim_review",
+      "description": "Operator reviews verification results and contradiction analysis before final report",
+      "approval_required": true,
+      "max_retries": 0,
+      "timeout_seconds": 10.0,
+      "rollback_on_failure": false
+    },
+    {
+      "node_id": "final_report",
+      "subagent": "knower",
+      "packet_type": "knower_claim_review",
+      "description": "Compile final report packet with classification, evidence summary, and operator sign-off",
+      "approval_required": false,
+      "max_retries": 1,
+      "timeout_seconds": 20.0,
+      "rollback_on_failure": false
+    }
+  ],
+  "edge_definitions": [
+    {
+      "edge_id": "e1",
+      "source": "ingest_claim",
+      "target": "knower_verification",
+      "label": "Ingested claim passed to KnowER"
+    },
+    {
+      "edge_id": "e2",
+      "source": "knower_verification",
+      "target": "contradiction_review",
+      "label": "Verified claim for contradiction analysis"
+    },
+    {
+      "edge_id": "e3",
+      "source": "contradiction_review",
+      "target": "approval_gate",
+      "label": "Contradiction results for operator review"
+    },
+    {
+      "edge_id": "e4",
+      "source": "approval_gate",
+      "target": "final_report",
+      "label": "Approved results for report generation"
+    }
+  ],
+  "stop_conditions": [
+    "final_report"
+  ],
+  "approval_points": [
+    "knower_verification",
+    "approval_gate"
+  ],
+  "rollback_behavior": "on_verification_failure_rollback_to_ingest",
+  "deterministic_fallback": "stop",
+  "audit_requirements": [
+    "workflow_id",
+    "workflow_version",
+    "node_execution_order",
+    "approval_pauses",
+    "rollback_events",
+    "validation_results",
+    "deterministic_fallback_activations",
+    "elapsed_timing"
+  ],
+  "_registered_at": "2026-05-16T03:34:13.636811+00:00",
+  "_registered_version": "2.3.0"
+}
