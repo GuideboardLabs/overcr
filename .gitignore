@@ -23,16 +23,20 @@ logs/
 # ── Task state (generated at runtime) ──
 orchestration/tasks/task-*.json
 
-# ── Audit log (generated at runtime, append-only) ──
-runtime/audit.jsonl
-
-# ── Workflow traces (generated at runtime by workflow_runner) ──
-runtime/workflow_trace_*.jsonl
+# ── Runtime directory (all generated artifacts) ──
+runtime/
 
 # ── Config templates (filled copies, not source) ──
 configs/cag-memory-config.json
 configs/session-ingestion-config.json
 configs/release-preservation-config.txt
+
+# ── Environment / secrets ──
+.env
+*.env
+
+# ── Hermes agent scratch ──
+.hermes/
 
 # ── IDE / editor ──
 .vscode/

@@ -262,6 +262,26 @@
       "accepts_workspace": false,
       "returns_exit_code": true,
       "signal": "exit_code"
+    },
+    {
+      "name": "memory_layer",
+      "module": "tests.test_memory_layer",
+      "callable": "main",
+      "category": "memory",
+      "description": "Semantic Memory Layer v2.1.0: create/load/search, stale marking, contradiction detection, conflict resolution governance, promoter rules, deterministic retrieval fallback, provenance integrity, canonical_state_refs integrity, rejected memory retention (31 tests)",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "tui_views",
+      "module": "tests.test_tui_views",
+      "callable": "main",
+      "category": "tui",
+      "description": "TUI Operator Interface v2.2.0: task rendering, workflow DAG, approval queue integrity, audit filtering, packet inspection (L1-L6), degraded runtime, deterministic fallback (10 phases)",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
     }
   ]
 }
