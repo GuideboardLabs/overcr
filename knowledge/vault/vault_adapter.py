@@ -279,6 +279,8 @@ class VaultIndex:
             "llm", "local-llm", "quantization", "inference",
             "devops", "infrastructure", "security",
             "writing", "communication",
+            "family", "people", "kids", "health",
+            "project", "tools", "vault", "recipes",
         }
         for tag in tags:
             if tag.lower() in known_domains:
