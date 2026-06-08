@@ -63,11 +63,13 @@ class OverCRRuntime:
     - validate_packet.py for 6-level packet validation
     """
 
-    def __init__(self, root: str):
+    def __init__(self, root: str, vault_path: str | None = None):
         """
         Args:
             root: Path to the OverCR core directory (contains orchestration/,
                   tools/, runtime/).
+            vault_path: Optional path to an Obsidian vault. If set, OverCR
+                        enriches task context with relevant vault facts.
         """
         self.root = Path(root)
         self.task_store = TaskStore(root)
@@ -75,6 +77,8 @@ class OverCRRuntime:
         self.gate = ApprovalGate()
         self._validator = None
         self._adapter = None
+        self._vault_index = None
+        self.vault_path = str(vault_path) if vault_path else None
 
     @property
     def adapter(self):
@@ -90,6 +94,15 @@ class OverCRRuntime:
         if self._validator is None:
             self._validator = _load_validator()
         return self._validator
+
+    @property
+    def vault_index(self):
+        """Lazy-load the VaultIndex (only if vault_path is configured)."""
+        if self._vault_index is None and self.vault_path:
+            from knowledge.vault import VaultIndex
+            self._vault_index = VaultIndex(self.vault_path)
+            self._vault_index.rebuild()
+        return self._vault_index
 
     # ── Phase 1: Task Creation ───────────────────────────────
 
@@ -112,13 +125,30 @@ class OverCRRuntime:
         # Select subagent
         subagent = self.task_store.select_subagent(domain)
 
-        # Create task record
+        # Create task record — enrich context with vault facts if configured
+        enriched_context = dict(input_context)
+        vault = self.vault_index
+        if vault:
+            facts = vault.search(
+                domain=domain,
+                tags=description.split(),
+                query=instruction,
+                max_results=15,
+            )
+            if facts:
+                enriched_context["_vault_facts"] = facts
+                enriched_context["_vault_note"] = (
+                    f"OverCR found {len(facts)} relevant vault facts "
+                    f"for domain '{domain}'. "
+                    f"Index includes {vault.stats()['notes_with_facts']} notes."
+                )
+
         task = self.task_store.create_task(
             assigned_subagent=subagent,
             domain=domain,
             description=description,
             instruction=instruction,
-            input_context=input_context,
+            input_context=enriched_context,
             constraints=constraints,
             required_packet_type=required_packet_type,
             upstream_task_id=upstream_task_id,
