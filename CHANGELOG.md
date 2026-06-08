@@ -9,6 +9,29 @@ for AI agent operations. Workloads run inside it; they are examples, not its ide
 
 ---
 
+## [2.11.0] — 2026-06-08
+
+### Added
+
+- **Vault-Grounded Memory** (`knowledge/vault/`) — OverCR reads structured facts fences from an Obsidian vault and injects relevant knowledge into every task's constructed context
+- `vault_adapter.py` — walks vault directories, discovers facts fences (gbrain/cammander/overcr format), builds a JSONL index, exposes domain/tag/keyword search with relevance ranking
+- `fact_parser.py` — parses both pipe-table format (legacy) and bullet-list format (`- [domain::key] claim`) from `<!--- overcr:facts:begin -->` fences
+- `wikilink_resolver.py` — resolves `[[wikilinks]]` to filesystem paths, builds adjacency lists, walks the graph (symlink-safe)
+- Runtime integration: optional `vault_path` parameter on `OverCRRuntime`, lazy-loaded `vault_index` (zero cost if not set), automatic enrichment of `input_context._vault_facts` during `create_task()`
+- 18 vault notes seeded with 203 structured facts across projects, research, tools, people, and household context (no personal specifics exposed)
+
+### Changed
+
+- `overcr_runtime.py`: `create_task()` now enriches context with vault facts when `vault_path` is configured. Facts ranked by domain → tag → keyword match.
+- `knowledge/vault/__init__.py`: exports `VaultIndex` as single entry point
+
+### Configuration
+
+```python
+# Single line to enable:
+r = OverCRRuntime(root, vault_path="/path/to/ObsidianVault")
+```
+
 ## [1.0.0] — 2026-05-11
 
 ### Changed

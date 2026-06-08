@@ -1,14 +1,14 @@
 # OverCR 
-(v2.10.0 — Stable Release Candidate)
+(v2.11.0 — Vault-Grounded Memory)
 
 ![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
 ![Runtime](https://img.shields.io/badge/Runtime-Hermes--first-purple)
 ![Architecture](https://img.shields.io/badge/Architecture-Filesystem--first-green)
 ![Validation](https://img.shields.io/badge/Validation-L1--L6-critical)
 ![Tests](https://img.shields.io/badge/Tests-27_suites_passing-brightgreen)
-![Release](https://img.shields.io/badge/Release-v2.10.0-gold)
+![Release](https://img.shields.io/badge/Release-v2.11.0-gold)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Status](https://img.shields.io/badge/Status-Stable_RC-success)
+![Status](https://img.shields.io/badge/Status-Stable-success)
 
 ---
 
@@ -33,6 +33,7 @@ OverCR provides identity, doctrine, boot continuity, filesystem-first state, sub
 | v2.8.0 | Workflow Composition | Composite DAGs — condition evaluation, branching, escalation policy, retry policy, routing policy, subworkflow loading with cycle detection, state machine |
 | v2.9.0 | Integration Hardening | 8 validators — schema registry, system validation, replay determinism, state consistency, release integrity, migration checking, compatibility matrix, recovery verification |
 | v2.10.0 | Stable Release | Release preparation — semantic compatibility, install validation, reproducible builds, operator readiness, version matrix, release manifests |
+| v2.11.0 | Vault Memory | Obsidian vault integration — reads structured facts fences, builds index, injects relevant knowledge into task context at creation time. No vector DB. No embeddings. Pure CAG. |
 
 ## Directory Structure
 
@@ -151,6 +152,7 @@ cd tests && python run_all.py
 | v2.8.0 | 2026-05-11 | Composition | Composite workflow DAGs, branching, escalation |
 | v2.9.0 | 2026-05-11 | Hardening | Integration validators, replay, state consistency |
 | v2.10.0 | 2026-05-16 | Stable RC | Release preparation, semantic compatibility, reproducibility |
+| v2.11.0 | 2026-06-08 | Stable | Vault-grounded memory — reads Obsidian vault facts fences, injects relevant knowledge into every task context. No vector DB. No embeddings. |
 
 ## License
 
