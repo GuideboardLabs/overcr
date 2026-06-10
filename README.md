@@ -16,7 +16,7 @@ OverCR (Operational Vigilance, Execution, Recovery, Command & Routing) is a **He
 
 It is not a chatbot, a SaaS wrapper, or a vertical product. It is the governed operating layer that AI workloads run inside.
 
-OverCR provides identity, doctrine, boot continuity, filesystem-first state, subagent routing, packet validation (L1-L6), workflow choreography, audit trails, approval gates, semantic memory, operator TUI, knowledge management, controlled web ingestion, execution sandboxing with kernel isolation, integration hardening, and release validation.
+OverCR provides identity, doctrine, boot continuity, filesystem-first state, subagent routing, packet validation (L1-L6), workflow choreography, audit trails, approval gates, semantic memory, operator TUI, knowledge management, controlled web ingestion, execution sandboxing with kernel isolation, integration hardening, release validation, and vault-grounded guidance facts (negative facts + next-action tracking).
 
 ## Capability Layers
 
