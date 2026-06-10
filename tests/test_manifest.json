@@ -124,6 +124,17 @@
       "functions": ["test_policy_violation_scenarios", "test_downgrade_constraint"]
     },
     {
+      "name": "fact_parser_kind",
+      "module": "tests.test_fact_parser",
+      "callable": null,
+      "category": "knowledge",
+      "description": "Fact parser kind prefix: bullet kind parsing, missing kind fallback",
+      "accepts_workspace": false,
+      "returns_exit_code": false,
+      "signal": "run_functions",
+      "functions": ["test_bullet_kind_parsing", "test_missing_kind_stays_na"]
+    },
+    {
       "name": "audit_integration",
       "module": "examples.test_audit_integration",
       "callable": "test_audit_logging",

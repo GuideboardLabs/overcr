@@ -128,16 +128,27 @@ def _parse_fence_body(body: str) -> list[dict[str, Any]]:
             # Try bullet format: - [domain::key] claim
             b = BULLET_ROW.match(line)
             if b:
+                raw_key = b.group(1).strip()
+                raw_claim = b.group(2).strip()
+
+                # Parse optional kind: prefix from claim
+                kind = "n/a"
+                claim = raw_claim
+                kind_match = re.match(r"^kind:(\w+)\s+(.*)", raw_claim)
+                if kind_match:
+                    kind = kind_match.group(1).strip()
+                    claim = kind_match.group(2).strip()
+
                 facts.append({
                     "line": 0,
-                    "claim": f"[{b.group(1)}] {b.group(2)}",
-                    "kind": "n/a",
+                    "claim": f"[{raw_key}] {claim}",
+                    "kind": kind,
                     "confidence": None,
                     "value": "",
                     "unit": "",
                     "source": "",
                     "context": "",
-                    "fact_key": b.group(1).strip(),
+                    "fact_key": raw_key,
                 })
 
     return facts
