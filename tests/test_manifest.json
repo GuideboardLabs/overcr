@@ -132,7 +132,7 @@
       "accepts_workspace": false,
       "returns_exit_code": false,
       "signal": "run_functions",
-      "functions": ["test_bullet_kind_parsing", "test_missing_kind_stays_na"]
+      "functions": ["test_bullet_kind_parsing", "test_missing_kind_stays_na", "test_search_by_kind"]
     },
     {
       "name": "audit_integration",

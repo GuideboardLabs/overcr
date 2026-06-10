@@ -127,6 +127,7 @@ class VaultIndex:
         domain: str | None = None,
         tags: list[str] | None = None,
         query: str | None = None,
+        kind: str | None = None,
         max_results: int = 20,
     ) -> list[dict]:
         """Search the vault for facts relevant to a domain/tags/query.
@@ -135,11 +136,12 @@ class VaultIndex:
             domain: Task domain (e.g. "cag", "research", "code").
             tags: Specific tags to match.
             query: Free-text keyword search within facts.
+            kind: Filter by fact kind (e.g. "rejected", "next_action", "n/a").
             max_results: Maximum facts to return.
 
         Returns:
             A list of fact dicts ordered by relevance (tag overlap first,
-            then domain match, then keyword match).
+            then domain match, then keyword match). Optionally filtered by kind.
         """
         if not self._built:
             self.rebuild()
@@ -178,6 +180,10 @@ class VaultIndex:
                         seen.add(key)
                         fact["_relevance"] = 0.5
                         candidates.append(fact)
+
+        # Filter by kind (if specified)
+        if kind:
+            candidates = [f for f in candidates if f.get("kind") == kind]
 
         # Sort by relevance descending, then by confidence descending
         candidates.sort(
