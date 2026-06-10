@@ -143,6 +143,35 @@ class OverCRRuntime:
                     f"Index includes {vault.stats()['notes_with_facts']} notes."
                 )
 
+            # Inject guidance facts — rejected approaches and next actions
+            rejected_approaches = vault.search(
+                domain=domain,
+                kind="rejected",
+                max_results=10,
+            )
+            next_actions = vault.search(
+                domain=domain,
+                kind="next_action",
+                max_results=5,
+            )
+
+            guidance_entries = []
+            if rejected_approaches:
+                enriched_context["_vault_rejected_approaches"] = rejected_approaches
+                guidance_entries.append(
+                    f"Known approaches that did NOT work ({len(rejected_approaches)}): "
+                    + "; ".join(f['claim'][:100] for f in rejected_approaches)
+                )
+            if next_actions:
+                enriched_context["_vault_next_actions"] = next_actions
+                guidance_entries.append(
+                    f"Suggested next actions ({len(next_actions)}): "
+                    + "; ".join(f['claim'][:100] for f in next_actions)
+                )
+
+            if guidance_entries:
+                enriched_context["_vault_guidance"] = "\n".join(guidance_entries)
+
         task = self.task_store.create_task(
             assigned_subagent=subagent,
             domain=domain,
