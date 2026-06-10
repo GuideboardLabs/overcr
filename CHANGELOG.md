@@ -9,6 +9,26 @@ for AI agent operations. Workloads run inside it; they are examples, not its ide
 
 ---
 
+## [2.11.1] — 2026-06-10
+
+### Added
+
+- **Negative facts (rejected approaches)** — bullet-format facts can now carry a `kind:rejected` prefix. These get injected into task context as `_vault_rejected_approaches`, telling agents what approaches are known to fail so they don't retry dead ends.
+- **Next-action tracking** — bullet-format facts can carry a `kind:next_action` prefix. These get injected as `_vault_next_actions`, bridging the "what should I do next?" gap between sessions.
+- `fact_parser.py`: optional `kind:` prefix in bullet format (e.g., `- [domain::key] kind:rejected This approach failed`). Backward compatible — existing facts without the prefix get `kind="n/a"`.
+- `vault_adapter.py`: `VaultIndex.search()` accepts a `kind` parameter for filtering by fact kind.
+- `overcr_runtime.py`: `create_task()` enriches context with `_vault_guidance`, `_vault_rejected_approaches`, and `_vault_next_actions` when vault facts of those kinds exist for the task domain.
+- Vault seeds: 4 rejected facts in `5-Research/overcr/index.md`, 2 next-action facts in `1-Projects/cammander/index.md`.
+
+### Changed
+
+- `fact_parser.py`: bullet format now extracts `kind` from `kind:<value>` prefix in the claim text.
+- `vault_adapter.py`: `VaultIndex.search()` signature extended with optional `kind` parameter.
+
+### Testing
+
+- `tests/test_fact_parser.py`: new test file covering kind prefix parsing, missing kind fallback, and kind-filtered search.
+
 ## [2.11.0] — 2026-06-08
 
 ### Added
