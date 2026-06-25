@@ -11,8 +11,8 @@
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_ORG/overcr-core.git
-cd overcr-core
+git clone https://github.com/YOUR_ORG/overcr.git
+cd overcr
 ```
 
 ### 2. Set the OVERCR_ROOT environment variable
@@ -73,7 +73,7 @@ for f in configs/*.tpl; do mv "$f" "${f%.tpl}"; done
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `{{OVERCR_ROOT}}` | Absolute path to OverCR workspace | `$HOME/overcr-core` |
+| `{{OVERCR_ROOT}}` | Absolute path to OverCR workspace | `$HOME/overcr` |
 | `{{HERMES_HOME}}` | Absolute path to Hermes config directory | `$HOME/.hermes` |
 | `{{HERMES_STATE_DB}}` | Absolute path to Hermes SQLite state DB | `$HOME/.hermes/state.db` |
 | `{{HERMES_HISTORY_PATH}}` | Absolute path to Hermes history file | `$HOME/.hermes/.hermes_history` |

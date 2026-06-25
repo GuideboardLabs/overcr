@@ -70,7 +70,7 @@ recovery-oriented design and cold-start reconstruction.
 - Subagent governance model
 """,
         origin="research://overcr-architecture.md",
-        project_scope="overcr-core",
+        project_scope="overcr",
         trust_level="verified",
     )
     print(f"  Markdown ingested: {md_src['source_id']:15s} — {md_src.get('summary', '')[:60]}")
@@ -88,7 +88,7 @@ recovery-oriented design and cold-start reconstruction.
             },
         }),
         origin="research://market-analysis-2026.json",
-        project_scope="overcr-core",
+        project_scope="overcr",
         trust_level="reputable",
     )
     print(f"  JSON ingested:    {json_src['source_id']:15s} — {json_src.get('summary', '')[:60]}")
@@ -106,7 +106,7 @@ on any hardware including local appliances. No lock-in.
 CompetitorB is also cloud-only but offers an API compatibility layer.
 Still requires an internet connection for basic operations.""",
         origin="research://competitor-analysis.txt",
-        project_scope="overcr-core",
+        project_scope="overcr",
         trust_level="reputable",
     )
     print(f"  Text ingested:    {txt_src['source_id']:15s} — {txt_src.get('summary', '')[:60]}")
@@ -176,7 +176,7 @@ Still requires an internet connection for basic operations.""",
         summary="AI orchestration market growing at 30% CAGR",
         tags=["market", "ai", "growth"],
         trust_level="reputable",
-        project_scope="overcr-core",
+        project_scope="overcr",
     )
     src_b = registry.register_source(
         origin="https://analyst-b.com/report",
@@ -184,7 +184,7 @@ Still requires an internet connection for basic operations.""",
         summary="AI orchestration market is shrinking",
         tags=["market", "ai", "decline"],
         trust_level="suspicious",
-        project_scope="overcr-core",
+        project_scope="overcr",
     )
 
     contradictions = detector.detect_contradictions([src_a["source_id"], src_b["source_id"]])

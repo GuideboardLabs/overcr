@@ -679,6 +679,88 @@ def test_safe_packet_content_allowed():
     assert decision.allowed, f"Safe packet should be allowed: {decision.reason}"
     print("  PASS: Safe packet content with no forbidden patterns allowed")
 
+# ────────────────────────────────────────────────────────
+# _check_packet_content_safety — Dangerous patterns
+# ────────────────────────────────────────────────────────
+
+def test_forbidden_shell_pattern_rm_rf_rejected():
+    """Packet content with 'rm -rf' shell command is blocked."""
+    packet = {
+        "content": "Please run rm -rf /tmp to clean up the directory",
+        "packet_type": "domain::command",
+    }
+    policy = WorkflowPolicy()
+    result = policy._check_packet_content_safety(packet)
+    assert not result.allowed, "rm -rf pattern should be blocked"
+    assert "rm -rf" in result.reason, "Reason should mention rm -rf"
+    print("  PASS: rm -rf pattern blocked")
+
+
+def test_forbidden_shell_pattern_exec_import_rejected():
+    """Packet content with 'exec(' or '__import__' is blocked."""
+    packet = {
+        "content": "Execute code with exec('ls') or use __import__('os').system('ls')",
+        "packet_type": "domain::dangerous",
+    }
+    policy = WorkflowPolicy()
+    result = policy._check_packet_content_safety(packet)
+    assert not result.allowed, "exec/import patterns should be blocked"
+    assert "exec" in result.reason.lower() or "import" in result.reason.lower(), \
+        "Reason should mention exec or import"
+    print("  PASS: exec/import pattern blocked")
+
+
+def test_forbidden_shell_pattern_subprocess_rejected():
+    """Packet content with 'subprocess.Popen' is blocked."""
+    packet = {
+        "content": "Spawn subprocess.Popen('cat /etc/passwd') to read sensitive file",
+        "packet_type": "domain::dangerous",
+    }
+    policy = WorkflowPolicy()
+    result = policy._check_packet_content_safety(packet)
+    assert not result.allowed, "subprocess.Popen pattern should be blocked"
+    assert "subprocess" in result.reason.lower(), "Reason should mention subprocess"
+    print("  PASS: subprocess.Popen pattern blocked")
+
+
+def test_forbidden_network_http_fetch_rejected():
+    """Packet content with 'http://' and 'fetch' is blocked."""
+    packet = {
+        "content": "Fetch data from http://example.com via active fetch",
+        "packet_type": "domain::network",
+    }
+    policy = WorkflowPolicy()
+    result = policy._check_packet_content_safety(packet)
+    assert not result.allowed, "http:// with fetch should be blocked"
+    assert "http" in result.reason.lower(), "Reason should mention http"
+    print("  PASS: http:// with fetch blocked")
+
+
+def test_forbidden_network_socket_connect_rejected():
+    """Packet content with 'socket.connect' is blocked."""
+    packet = {
+        "content": "Connect via socket.connect(('127.0.0.1', 8080)) to external server",
+        "packet_type": "domain::network",
+    }
+    policy = WorkflowPolicy()
+    result = policy._check_packet_content_safety(packet)
+    assert not result.allowed, "socket.connect pattern should be blocked"
+    assert "socket" in result.reason.lower(), "Reason should mention socket"
+    print("  PASS: socket.connect pattern blocked")
+
+
+def test_safe_packet_content_allowed():
+    """Safe packet content with no forbidden patterns is allowed."""
+    packet = {
+        "content": "The file contains: Hello World. This is a safe message.",
+        "packet_type": "domain::safe",
+    }
+    policy = WorkflowPolicy()
+    result = policy._check_packet_content_safety(packet)
+    assert result.allowed, "Safe content should be allowed"
+    assert "passed safety" in result.reason.lower(), "Reason should indicate passed safety checks"
+    print("  PASS: Safe packet content allowed")
+
 
 def test_edge_handoff_same_subagent():
     """Edge handoff between nodes of the same subagent is allowed (internal edge)."""

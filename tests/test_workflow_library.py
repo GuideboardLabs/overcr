@@ -604,9 +604,9 @@ def test_execute_all_workflows():
     workflows = [
         ("claim_review", {"raw_claims": ["Test claim: OverCR is a portable AI orchestration substrate"]}),
         ("recon_brief", {"entity": "test-entity"}),
-        ("coder_patch_review", {"repository": "overcr-core", "issue": "test-bug"}),
+        ("coder_patch_review", {"repository": "overcr", "issue": "test-bug"}),
         ("execution_plan_review", {"entity": "test-entity", "action": "validate_packet"}),
-        ("release_freeze", {"version": "2.3.0", "repository": "overcr-core"}),
+        ("release_freeze", {"version": "2.3.0", "repository": "overcr"}),
     ]
 
     for wf_id, inputs in workflows:

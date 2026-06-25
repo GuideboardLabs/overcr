@@ -1,7 +1,7 @@
 # OverCR — Repository Structure
 
 ```
-overcr-core/
+overcr/
 ├── .gitignore                        # Excludes runtime state, __pycache__, task files, audit logs
 ├── LICENSE.md                         # Internal use only
 ├── README.md                          # Overview, quick start, architecture principles

@@ -88,7 +88,7 @@ def main():
 
     with tempfile.TemporaryDirectory(prefix="overcr-rc-extract-") as tmp:
         tmp_root = Path(tmp)
-        extracted = tmp_root / "overcr-core"
+        extracted = tmp_root / "overcr"
 
         import tarfile
         with tarfile.open(archive_path, "r:gz") as tar:

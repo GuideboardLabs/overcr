@@ -336,6 +336,138 @@ def test_routing_policy_records():
 
 # ── Test 17: Escalation export ────────────────────────────
 
+
+# ── Test 16: Full routing pipeline end-to-end ──────────────
+
+def test_full_routing_pipeline():
+    """
+    Verify the complete routing pipeline end-to-end:
+    1. Conditional edge is evaluated
+    2. Correct branch is selected based on context
+    3. State machine transitions
+    4. Routing decision is recorded in audit trail
+    
+    Sets up a workflow with two conditional branches (high confidence vs low),
+    feeds context that triggers high-confidence path, and verifies the
+    decision record contains matched condition, target node, and timestamp.
+    """
+    rp = RoutingPolicy()
+    sm = WorkflowStateMachine()
+    
+    # Setup: Two conditional branches from "check" node
+    # - high_confidence path: requires confidence >= 4
+    # - medium_confidence path: requires confidence >= 2 but < 4
+    conditional_edges = [
+        {
+            "edge_id": "c1",
+            "source": "check",
+            "target": "high_confidence",
+            "condition": {
+                "type": "confidence_threshold",
+                "field": "node_outcomes.check.confidence",
+                "operator": ">=",
+                "value": 4,
+            },
+            "priority": 0,
+        },
+        {
+            "edge_id": "c2",
+            "source": "check",
+            "target": "medium_confidence",
+            "condition": {
+                "type": "confidence_threshold",
+                "field": "node_outcomes.check.confidence",
+                "operator": ">=",
+                "value": 2,
+            },
+            "priority": 1,
+        },
+    ]
+    
+    # Static fallback edge
+    static_edges = [
+        {"edge_id": "s1", "source": "check", "target": "default_handler"},
+    ]
+    
+    # Context that triggers high-confidence path
+    ctx = {
+        "node_outcomes": {
+            "check": {
+                "confidence": 5,
+            },
+        },
+    }
+    
+    # Execute: Route from "check" node
+    decision = rp.next_node("check", static_edges, conditional_edges, ctx, "operator123")
+    
+    # Verify: Decision type and target node
+    _assert(decision.decision_type == "conditional_branch",
+            f"Expected conditional_branch, got {decision.decision_type}")
+    _assert(decision.target_node_id == "high_confidence",
+            f"Expected high_confidence target, got {decision.target_node_id}")
+    
+    # Verify: Matched condition is recorded
+    _assert(decision.matched_condition is not None,
+            "matched_condition should be recorded")
+    _assert(decision.matched_condition["edge_id"] == "c1",
+            f"Expected edge_id c1, got {decision.matched_condition.get("edge_id")}")
+    
+    # Verify: Evaluated conditions contain the evaluated result
+    _assert(len(decision.evaluated_conditions) > 0,
+            "evaluated_conditions should contain evaluated results")
+    evaluated = decision.evaluated_conditions[0]
+    _assert(evaluated.passed == True,
+            f"Condition should pass for confidence=5")
+    
+    # Verify: Workflow state snapshot is recorded
+    _assert("workflow_state_snapshot" in decision.__dict__,
+            "workflow_state_snapshot should be recorded")
+    snapshot = decision.workflow_state_snapshot
+    _assert("node_outcomes" in snapshot,
+            "node_outcomes should be in snapshot")
+    _assert(snapshot["node_outcomes"]["check"]["confidence"] == 5,
+            f"Snapshot should preserve confidence=5, got {snapshot.get("node_outcomes")}")
+    
+    # Verify: Operator context is recorded
+    _assert(decision.operator_context == "operator123",
+            f"Expected operator123, got {decision.operator_context}")
+    
+    # Verify: Timestamp is recorded
+    _assert("timestamp" in decision.__dict__,
+            "timestamp should be recorded")
+    timestamp = decision.timestamp
+    _assert(len(timestamp) > 0 and timestamp.startswith("20"),
+            f"Timestamp should be ISO format, got {timestamp}")
+    
+    # Verify: Decision is recorded in policy history
+    decisions = rp.get_decisions()
+    _assert(len(decisions) >= 1, f"Should have at least 1 decision, got {len(decisions)}")
+    
+    # Verify: Decision trace is exported correctly
+    trace = rp.export_trace()
+    _assert(len(trace) >= 1, f"Trace should contain at least 1 entry, got {len(trace)}")
+    
+    # Verify: State machine transition is recorded
+    sm.transition_to("running", "workflow started")
+    hist = sm.export_history()
+    _assert(len(hist) == 1, f"Should have 1 transition in history, got {len(hist)}")
+    
+    # Verify: Transition history contains from/to states
+    _assert(hist[0]["from_state"] == "initialized",
+            f"Expected from_state=initialized, got {hist[0].get("from_state")}")
+    _assert(hist[0]["to_state"] == "running",
+            f"Expected to_state=running, got {hist[0].get("to_state")}")
+    
+    # Verify: Timestamp in transition history
+    _assert("timestamp" in hist[0],
+            "Transition history should contain timestamp")
+    
+    print("  PASS: Full routing pipeline end-to-end")
+
+
+# ── Test 17: Escalation export ───────────────────────────
+
 def test_escalation_export():
     ep = EscalationPolicy()
     ep.escalate("n1", "test", severity="low")
@@ -359,6 +491,68 @@ def test_negation_in_conditions():
     _assert(e.evaluate(cond2, ctx).passed, "negated false == true")
     print("  PASS: Negation in conditions")
 
+# ── Test: Schema validation ───────────────────────────────
+
+import jsonschema
+
+def test_schema_validation():
+    """
+    Validate a workflow dict against the JSON schema.
+    1. Create a valid workflow dict
+    2. Create an invalid workflow dict (missing required field)
+    3. Verify jsonschema catches the invalid one
+    """
+    schema_path = OVERCR_ROOT / "workflow_composition" / "schema" / "composite_workflow.schema.json"
+    with open(schema_path) as f:
+        schema = json.load(f)
+    
+    # Valid workflow
+    valid_workflow = {
+        "workflow_id": "wf_123",
+        "workflow_name": "Test Workflow",
+        "version": "1.0.0",
+        "node_definitions": [
+            {
+                "node_id": "node_1",
+                "subagent": "verify",
+                "packet_type": "verification"
+            }
+        ]
+    }
+    try:
+        jsonschema.validate(valid_workflow, schema)
+        _assert(True, "Valid workflow accepted")
+    except jsonschema.ValidationError as e:
+        print(f"  FAIL: Valid workflow rejected: {e.message}")
+        FAILED = True
+    
+    # Invalid workflow (missing required workflow_id)
+    invalid_workflow = {
+        "workflow_name": "Test Workflow",
+        "version": "1.0.0",
+        "node_definitions": []
+    }
+    try:
+        jsonschema.validate(invalid_workflow, schema)
+        print("  FAIL: Invalid workflow accepted (should have raised ValidationError)")
+        FAILED = True
+    except jsonschema.ValidationError as e:
+        _assert(True, "Invalid workflow rejected: " + e.message)
+    
+    # Invalid workflow (missing required node_definitions)
+    invalid_workflow2 = {
+        "workflow_id": "wf_456",
+        "workflow_name": "Test Workflow",
+        "version": "1.0.0"
+    }
+    try:
+        jsonschema.validate(invalid_workflow2, schema)
+        print("  FAIL: Invalid workflow accepted (should have raised ValidationError)")
+        FAILED = True
+    except jsonschema.ValidationError as e:
+        _assert(True, "Invalid workflow rejected: " + e.message)
+    
+    print("  PASS: Schema validation")
 # ── Main ──────────────────────────────────────────────────
 
 def main():
@@ -385,7 +579,8 @@ def main():
         ("Malformed condition rejection", test_malformed_condition_rejection),
         ("Routing policy records", test_routing_policy_records),
         ("Escalation export", test_escalation_export),
-        ("Negation in conditions", test_negation_in_conditions),
+        ("Full routing pipeline", test_full_routing_pipeline),
+        ("Schema validation", test_schema_validation),
     ]
     for name, fn in tests:
         print(f"\n--- {name} ---")

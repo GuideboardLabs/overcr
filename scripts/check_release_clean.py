@@ -8,7 +8,7 @@ are present in the source tree or a release archive.
 
 Usage:
     python3 scripts/check_release_clean.py                    # Check source tree
-    python3 scripts/check_release_clean.py --archive dist/overcr-core-0.2.4.tar.gz  # Check archive
+    python3 scripts/check_release_clean.py --archive dist/overcr-0.2.4.tar.gz  # Check archive
 
 Exits 0 if clean, 1 if forbidden content found.
 """
@@ -30,7 +30,7 @@ from pathlib import Path
 FORBIDDEN_PATHS = [
     # Machine-specific paths (must use $OVERCR_ROOT or dynamic paths instead)
     r"/home/sc/[^/]",           # Machine-specific home directory
-    r"/home/sc/overcr-core",    # Hardcoded OverCR root
+    r"/home/sc/overcr",    # Hardcoded OverCR root
     r"/home/sc/ai-stack",       # Legacy bootstrap path
     r"/home/sc/overcr-releases",# Machine-specific release archive path
     r"/home/sc/openclaw-",      # Machine-specific CAG path
@@ -58,7 +58,7 @@ FORBIDDEN_DIRS = [
 FORBIDDEN_CONTENT = [
     # Machine-specific paths in file contents
     (r"/home/sc/ai-stack/", "Legacy bootstrap path"),
-    (r"/home/sc/overcr-core(?!\s)", "Hardcoded OverCR root path"),
+    (r"/home/sc/overcr(?!\\s)", "Hardcoded OverCR root path"),
 ]
 
 ALLOWED_PATTERNS = [

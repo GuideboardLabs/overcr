@@ -106,7 +106,7 @@ class InstallValidator:
 
         with tempfile.TemporaryDirectory(prefix="overcr-install-test-") as tmp:
             tmp_root = Path(tmp)
-            extracted = tmp_root / "overcr-core"
+            extracted = tmp_root / "overcr"
 
             # Copy source tree (simulates extraction)
             shutil.copytree(str(self.root), str(extracted),
@@ -225,7 +225,7 @@ class InstallValidator:
                 try:
                     content = py_file.read_text()
                     # Look for absolute paths that reference the dev environment
-                    if "/home/sc/overcr-core" in content:
+                    if "/home/sc/overcr" in content:
                         suspicious_paths += 1
                         if suspicious_paths <= 3:
                             report.add_warning(

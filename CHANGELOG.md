@@ -144,7 +144,7 @@ r = OverCRRuntime(root, vault_path="/path/to/ObsidianVault")
 
 - Replaced all machine-specific absolute paths with `$OVERCR_ROOT` or `Path(__file__)` dynamic resolution
 - Removed legacy machine-specific path references from README.md, example docstrings, worker README
-- Updated skill SKILL.md canonical root to `$HOME/overcr-core`
+- Updated skill SKILL.md canonical root to `$HOME/overcr`
 - `examples/test_v021_routing_policy_violations.py` and `test_audit_integration.py`: hardcoded absolute path in `sys.path.insert()` replaced with dynamic path resolution
 
 ## [0.2.1] — 2026-05-10

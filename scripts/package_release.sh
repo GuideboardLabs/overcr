@@ -11,8 +11,8 @@
 #   ./scripts/package_release.sh 0.2.4   # explicit version
 #
 # Output:
-#   dist/overcr-core-<version>.tar.gz
-#   dist/overcr-core-<version>.zip
+#   dist/overcr-<version>.tar.gz
+#   dist/overcr-<version>.zip
 
 set -euo pipefail
 
@@ -35,7 +35,7 @@ print(__version__)
     echo "Detected version: $VERSION"
 fi
 
-PKG_NAME="overcr-core-${VERSION}"
+PKG_NAME="overcr-${VERSION}"
 DIST_DIR="${ROOT}/dist"
 
 echo "========================================"

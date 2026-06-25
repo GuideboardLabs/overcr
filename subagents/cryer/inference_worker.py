@@ -81,7 +81,7 @@ def _get_inference_adapter():
         pass
 
     try:
-        # Try runtime module (overcr-core/runtime)
+        # Try runtime module (overcr/runtime)
         spec = importlib.util.spec_from_file_location(
             "inference_adapter", str(OVERCR_ROOT / "runtime" / "inference_adapter.py")
         )

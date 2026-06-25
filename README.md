@@ -39,7 +39,7 @@ OverCR provides identity, doctrine, boot continuity, filesystem-first state, sub
 ## Directory Structure
 
 ```
-overcr-core/
+overcr/
   README.md                              # This file
   CHANGELOG.md                           # Full change history v0.1 → v2.10.0
   INSTALL.md                             # Installation and quick start
@@ -113,7 +113,7 @@ PypER always operates with `approval_required=true` and `execution_authority="no
 
 ## Quick Start
 
-1. Copy `overcr-core/` to your desired location (e.g., `$HOME/overcr-core`)
+1. Copy `overcr/` to your desired location (e.g., `$HOME/overcr`)
 2. Copy skeleton contents and fill config templates:
    ```bash
    cp -r skeleton/* .

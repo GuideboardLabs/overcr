@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "description": "OverCR consolidated regression test suite — v1.0.0",
+  "description": "OverCR consolidated regression test suite \u2014 v1.0.0",
   "tests": [
     {
       "name": "approval_boundary",
@@ -121,7 +121,10 @@
       "accepts_workspace": false,
       "returns_exit_code": false,
       "signal": "run_functions",
-      "functions": ["test_policy_violation_scenarios", "test_downgrade_constraint"]
+      "functions": [
+        "test_policy_violation_scenarios",
+        "test_downgrade_constraint"
+      ]
     },
     {
       "name": "fact_parser_kind",
@@ -132,7 +135,12 @@
       "accepts_workspace": false,
       "returns_exit_code": false,
       "signal": "run_functions",
-      "functions": ["test_bullet_kind_parsing", "test_missing_kind_stays_na", "test_search_by_kind"]
+      "functions": [
+        "test_bullet_kind_parsing",
+        "test_missing_kind_stays_na",
+        "test_search_by_kind",
+        "test_multiline_claims"
+      ]
     },
     {
       "name": "audit_integration",
@@ -209,7 +217,7 @@
       "module": "tests.test_real_inference_v043",
       "callable": "main",
       "category": "inference",
-      "description": "v0.4.3 E2E: real Hermes inference → sanitizer → KnowER packet → L1-L6 validation, with raw+sanitized audit trail",
+      "description": "v0.4.3 E2E: real Hermes inference \u2192 sanitizer \u2192 KnowER packet \u2192 L1-L6 validation, with raw+sanitized audit trail",
       "accepts_workspace": false,
       "returns_exit_code": true,
       "signal": "exit_code"
@@ -320,6 +328,26 @@
       "callable": "main",
       "category": "validation",
       "description": "Final Validation v2.10.1: soak tester, security fuzzer, performance baseline, operator acceptance, platform report, readiness checker (8 phases)",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "worker_healthcheck",
+      "module": "tests.test_worker_healthcheck",
+      "callable": "main",
+      "category": "worker",
+      "description": "Worker healthcheck: successful, timeout, invalid JSON, missing L1 fields, check_all_workers (5 tests)",
+      "accepts_workspace": false,
+      "returns_exit_code": true,
+      "signal": "exit_code"
+    },
+    {
+      "name": "worker_capabilities",
+      "module": "tests.test_worker_capabilities",
+      "callable": "main",
+      "category": "worker",
+      "description": "Worker capabilities: validate_capabilities, validate_packet_types, get_capability_summary",
       "accepts_workspace": false,
       "returns_exit_code": true,
       "signal": "exit_code"

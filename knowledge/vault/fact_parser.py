@@ -40,6 +40,18 @@ FENCE_PATTERNS = {
         r"<!---\s*overcr:facts:end\s*-->",
         re.DOTALL,
     ),
+    "brand": re.compile(
+        r"<!---\s*brand:facts:begin\s*-->\s*\n"
+        r"(.*?)"
+        r"<!---\s*brand:facts:end\s*-->",
+        re.DOTALL,
+    ),
+    "social": re.compile(
+        r"<!---\s*social:facts:begin\s*-->\s*\n"
+        r"(.*?)"
+        r"<!---\s*social:facts:end\s*-->",
+        re.DOTALL,
+    ),
 }
 
 # Table row regex: | col1 | col2 | col3 | col4 | col5 | col6 | col7 | col8 |
@@ -101,7 +113,8 @@ def _parse_fence_body(body: str) -> list[dict[str, Any]]:
     facts: list[dict[str, Any]] = []
     lines = body.split("\n")
 
-    for line in lines:
+    for i, line in enumerate(lines):
+        original_line = line
         line = line.strip()
 
         # Skip empty lines, header rows, separator rows
@@ -139,6 +152,27 @@ def _parse_fence_body(body: str) -> list[dict[str, Any]]:
                     kind = kind_match.group(1).strip()
                     claim = kind_match.group(2).strip()
 
+                # Check if claim ends with backslash for line continuation
+                if claim.rstrip().endswith("\\"):
+                    # Start accumulating multi-line claim
+                    accumulated_claim = claim.rstrip().rstrip("\\")
+                    start_idx = i + 1
+                    while start_idx < len(lines):
+                        next_line = lines[start_idx].strip()
+                        if not next_line:
+                            # Empty line ends continuation
+                            break
+                        # Check if next line is a new bullet (starts with -)
+                        if next_line.startswith("-"):
+                            # New bullet, stop accumulation
+                            break
+                        # Append to accumulated claim
+                        accumulated_claim += " " + next_line
+                        start_idx += 1
+                    # Use accumulated claim
+                    claim = accumulated_claim
+                    i = start_idx - 1  # Skip processed continuation lines
+
                 facts.append({
                     "line": 0,
                     "claim": f"[{raw_key}] {claim}",
@@ -150,6 +184,12 @@ def _parse_fence_body(body: str) -> list[dict[str, Any]]:
                     "context": "",
                     "fact_key": raw_key,
                 })
+
+            elif not line.startswith("-"):
+                # Non-bullet, non-empty line: skip silently
+                pass
+
+        i += 1
 
     return facts
 

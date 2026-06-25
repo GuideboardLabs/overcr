@@ -93,7 +93,7 @@ def main():
         url="https://overcr.example.com",
         requested_by="demo-operator",
         purpose="Research OverCR architecture for knowledge base",
-        project_scope="overcr-core",
+        project_scope="overcr",
         max_bytes=1048576,  # 1MB
         timeout_s=15.0,
     )

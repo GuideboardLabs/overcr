@@ -120,7 +120,7 @@ class ReleaseBuilder:
             if match:
                 version = match.group(1)
 
-        archive_name = f"overcr-core-{version}.tar.gz"
+        archive_name = f"overcr-{version}.tar.gz"
         archive_path = out / archive_name
 
         # Collect files
@@ -204,7 +204,7 @@ class ReleaseBuilder:
                 "archive_size": build.archive_size,
                 "packages": self._get_package_versions(),
             }
-            meta_path = out / f"overcr-core-{version}.meta.json"
+            meta_path = out / f"overcr-{version}.meta.json"
             meta_path.write_text(json.dumps(metadata, indent=2))
             build.add_result("build:metadata", "PASS", str(meta_path))
 

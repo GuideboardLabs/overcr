@@ -29,10 +29,10 @@ trace files exist in `runtime/`.
 
 ### F2: Phantom $HOME directory in repo [LOW]
 
-**File:** `$HOME/overcr-core` directory exists inside the repo root
+**File:** `$HOME/overcr` directory exists inside the repo root
 **Issue:** A directory literally named `$HOME` was created at some point, likely
 by a script that didn't expand `$HOME` correctly. It contains nested
-`overcr-core/security` subdirectory.
+`overcr/security` subdirectory.
 **Fix:** Remove `$HOME/` directory from repo.
 **Status:** OPEN (fix requires directory removal)
 

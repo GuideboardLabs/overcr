@@ -480,7 +480,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--workspace",
         default=None,
-        help="Directory for demo workspace (default: use overcr-core directory)",
+        help="Directory for demo workspace (default: use overcr directory)",
     )
     args = parser.parse_args()
 

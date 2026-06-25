@@ -7,7 +7,7 @@ Builds a clean release archive with SHA256 manifest and metadata.
 Usage:
     python3 scripts/build_release_candidate.py
 
-Outputs: dist/overcr-core-2.10.0.tar.gz + .sha256 + .meta.json
+Outputs: dist/overcr-2.10.0.tar.gz + .sha256 + .meta.json
 Exits 0 on success, 1 on failure.
 """
 

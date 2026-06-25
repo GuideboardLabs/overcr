@@ -73,8 +73,43 @@ tags: [test]
 
     print("  [PASS] test_search_by_kind")
 
-if __name__ == "__main__":
-    test_bullet_kind_parsing()
-    test_missing_kind_stays_na()
-    test_search_by_kind()
-    print("All fact_parser kind tests PASS")
+def test_multiline_claims():
+    """Multi-line claims (text spanning multiple lines after kind: prefix) parse correctly."""
+    # Multi-line claims use backslash continuation: claim\
+    text = """<!--- overcr:facts:begin -->
+
+    - [domain::multiline] kind:next_action This is a multi-line claim\\
+        It spans several lines before the next bullet.
+    
+    - [domain::multiline2] kind:next_action Another multi-line rejection\\
+        With multiple paragraphs.
+        And more text here.
+    
+    - [domain::single] kind:fact Single line claim
+    
+    <!--- overcr:facts:end -->"""
+
+    facts = parse_text(text)
+    assert len(facts) == 3, f"Expected 3 facts, got {len(facts)}"
+    
+    # Find next_action facts
+    next_acts = [f for f in facts if f.get("kind") == "next_action"]
+    assert len(next_acts) == 2, f"Expected 2 next_action facts, got {len(next_acts)}"
+    
+    # First multi-line claim
+    claim1 = next_acts[0]["claim"]
+    assert "This is a multi-line claim" in claim1, "First multi-line claim not parsed correctly"
+    assert "spans several lines" in claim1, "Multi-line content truncated"
+    
+    # Second multi-line claim  
+    claim2 = next_acts[1]["claim"]
+    assert "Another multi-line rejection" in claim2, "Second multi-line claim not parsed"
+    assert "multiple paragraphs" in claim2, "Multi-line content truncated"
+    assert "And more text here" in claim2, "Full multi-line claim not captured"
+    
+    # Single line fact
+    single = [f for f in facts if f.get("kind") == "fact"][0]
+    assert "domain::single" in single["claim"], "Single line fact not parsed correctly"
+    assert "Single line claim" in single["claim"], "Single line claim text missing"
+    
+    print("  [PASS] test_multiline_claims")

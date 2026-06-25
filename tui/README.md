@@ -42,7 +42,7 @@ The main view. Composes status bar, approval queue, task list, and audit stream 
 ```python
 from tui.dashboard import Dashboard
 
-dash = Dashboard(root="/path/to/overcr-core")
+dash = Dashboard(root="/path/to/overcr")
 output = dash.render()           # Rich-formatted
 plain = dash.render_plain()      # Plain-text fallback
 section = dash.render_section("approvals")  # Single section
@@ -54,7 +54,7 @@ Renders task lifecycle state from `orchestration/tasks/`.
 ```python
 from tui.task_view import TaskView
 
-tv = TaskView(root="/path/to/overcr-core")
+tv = TaskView(root="/path/to/overcr")
 tv.render_task_list()                          # All tasks
 tv.render_task_list(filter_state="approval_pending")  # Filtered
 tv.render_task_detail("task-0565")             # Single task detail
@@ -68,7 +68,7 @@ Renders workflow DAG as ASCII/text tree.
 ```python
 from tui.workflow_view import WorkflowView
 
-wv = WorkflowView(root="/path/to/overcr-core")
+wv = WorkflowView(root="/path/to/overcr")
 wv.render_dag(graph_data, node_states={...})   # Rich DAG
 wv.render_dag_plain(graph_data, node_states)    # Plain fallback
 wv.render_node_states_table(graph_data, node_states)
@@ -80,7 +80,7 @@ Shows packet contents, validation status, L1-L6 outcomes, provenance, routing me
 ```python
 from tui.packet_inspector import PacketInspector
 
-pi = PacketInspector(root="/path/to/overcr-core")
+pi = PacketInspector(root="/path/to/overcr")
 pi.render_request_packet("task-0565")    # Request packet
 pi.render_response_packet("task-0565")    # Response packet
 pi.render_validation_status("task-0565")  # L1-L6 breakdown
@@ -95,7 +95,7 @@ Renders the append-only audit stream from `runtime/audit.jsonl`.
 ```python
 from tui.audit_view import AuditView
 
-av = AuditView(root="/path/to/overcr-core")
+av = AuditView(root="/path/to/overcr")
 av.render()                          # Last 50 entries
 av.render(filter_task="task-0565")    # Filter by task
 av.render(filter_type="approval_action")  # Filter by type
@@ -110,7 +110,7 @@ Shows pending approvals with rationale. Approval actions are returned as `Approv
 ```python
 from tui.approval_queue import ApprovalQueue, ApprovalAction
 
-aq = ApprovalQueue(root="/path/to/overcr-core")
+aq = ApprovalQueue(root="/path/to/overcr")
 aq.render_queue()                  # All pending approvals
 aq.render_queue_plain()            # Plain fallback
 aq.render_detail("task-0565")      # Detail for one approval
@@ -127,7 +127,7 @@ Runtime health summary: task counts, approval queue depth, memory summary, worke
 ```python
 from tui.status_bar import StatusBar
 
-sb = StatusBar(root="/path/to/overcr-core")
+sb = StatusBar(root="/path/to/overcr")
 sb.render()         # Rich-formatted
 sb.render_plain()   # Plain fallback
 ```

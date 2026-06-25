@@ -96,7 +96,7 @@ def main():
     print_section("Step 5: Executing — CodER Patch Review")
 
     result = executor.execute_workflow("coder_patch_review", initial_input={
-        "repository": "overcr-core",
+        "repository": "overcr",
         "issue": "test-enhancement",
         "affected_files": ["validate_packet.py"],
     }, operator="demo-operator")
@@ -125,7 +125,7 @@ def main():
 
     result = executor.execute_workflow("release_freeze", initial_input={
         "version": "2.3.0",
-        "repository": "overcr-core",
+        "repository": "overcr",
         "pre_release_checks": ["tests", "lint", "schema", "docs"],
     }, operator="demo-operator")
 
